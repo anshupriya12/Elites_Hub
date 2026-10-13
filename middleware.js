@@ -2,6 +2,7 @@ const Listing = require("./models/listing");
 const Review = require("./models/review");
 const ExpressError = require("./utils/ExpressError.js");
 const { listingSchema, reviewSchema } = require("./schema.js");
+const { deleteUploadedImage } = require("./cloudConfig.js");
 
 module.exports.isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
@@ -48,14 +49,18 @@ module.exports.isOwner = async (req, res, next) => {
   }
 };
 
-module.exports.validateListing = (req, res, next) => {
-  let { error } = listingSchema.validate(req.body);
+module.exports.validateListing = async (req, res, next) => {
+  let { error, value } = listingSchema.validate(req.body);
   if (error) {
+    // The image may already be on Cloudinary (multer runs first); remove it since the listing is rejected.
+    await deleteUploadedImage(req.file);
     let errMsg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, errMsg);
-  } else {
-    next();
+    return next(new ExpressError(400, errMsg));
   }
+  // Use the validated values: text is trimmed and the price is a number. Images only come from the upload.
+  delete value.listing.image;
+  req.body = value;
+  next();
 };
 
 module.exports.validateReview = (req, res, next) => {

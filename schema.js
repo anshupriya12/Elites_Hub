@@ -2,11 +2,12 @@ const Joi = require("joi");
 
 module.exports.listingSchema = Joi.object({
     listing: Joi.object({
-    title: Joi.string().required(),
-    description: Joi.string().required(),
-    location: Joi.string().required(),
-    country: Joi.string().required(),
-    price: Joi.number().required().min(0),
+    title: Joi.string().trim().max(100).required(),
+    description: Joi.string().trim().max(2000).required(),
+    location: Joi.string().trim().max(100).required(),
+    country: Joi.string().trim().max(60).required(),
+    // Must be > 0 so every listing can be booked (the booking flow rejects non-positive prices).
+    price: Joi.number().greater(0).max(100000).required(),
     image: Joi.string().allow("", null),
   }).required(),
 });

@@ -30,12 +30,16 @@
 
       <div class="mb-3">
         Original Listing Image <br /><br />
-        <img src="<%= originalImageUrl %>" class="rounded" />
+        <% if (originalImageUrl) { %>
+          <img src="<%= originalImageUrl %>" class="rounded" />
+        <% } else { %>
+          <span class="text-muted">No image uploaded yet.</span>
+        <% } %>
       </div>
 
       <div class="mb-3">
         <label for="image" class="form-label">Upload New Image</label>
-        <input name="listing[image]" type="file" class="form-control" />
+        <input name="listing[image]" type="file" accept="image/png,image/jpeg,image/webp" class="form-control" />
       </div>
 
       <div class="row">
@@ -45,6 +49,9 @@
             name="listing[price]"
             value="<%= listing.price %>"
             type="number"
+            min="1"
+            max="100000"
+            step="any"
             class="form-control"
             required
           />

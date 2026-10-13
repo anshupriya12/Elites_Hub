@@ -36,6 +36,7 @@
         <input
           name="listing[image]"
           type="file"
+          accept="image/png,image/jpeg,image/webp"
           class="form-control"
           required
         />
@@ -47,6 +48,10 @@
           <input
             name="listing[price]"
             placeholder="1000"
+            type="number"
+            min="1"
+            max="100000"
+            step="any"
             class="form-control"
             required
           />
