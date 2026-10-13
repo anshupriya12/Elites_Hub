@@ -19,11 +19,17 @@ const User = require("./models/user.js");
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
+const bookingRouter = require("./routes/booking.js");
 const listingController = require("./controllers/listing.js");
 const compression = require('compression');
 
-// const dbUrl = process.env.ATLASDB_URL;
-const dbUrl = "mongodb+srv://Nitesh:Nitesh%40123@cluster0.6tifeca.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const dbUrl = process.env.ATLASDB_URL;
+if (!dbUrl) {
+  console.error(
+    "ATLASDB_URL is not set. Add your MongoDB connection string to .env (see .env.example)."
+  );
+  process.exit(1);
+}
 
 main()
   .then(() => {
@@ -53,7 +59,7 @@ const store = MongoStore.create({
   touchAfter: 24 * 3600,
 });
 
-store.on("error", () => {
+store.on("error", (err) => {
   console.log("ERROR in MONGO SESSION STORE", err);
 });
 
@@ -93,6 +99,7 @@ app.use((req, res, next) => {
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
+app.use("/", bookingRouter);
 app.use("/", userRouter);
 
 app.get("/success", listingController.index);

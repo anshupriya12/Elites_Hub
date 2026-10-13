@@ -1,0 +1,47 @@
+<% layout("/layouts/boilerplate") %>
+
+<%
+  const day = (d) => d.toISOString().slice(0, 10);
+  const status = booking.paymentStatus;
+  const badge = status === "paid" ? "success" : status === "failed" ? "danger" : "warning";
+  const label = status === "paid" ? "Paid" : status === "failed" ? "Payment failed" : "Payment pending";
+%>
+
+<div class="row my-5">
+  <div class="col-lg-6 col-md-10 col-sm-12 mx-auto shadow rounded p-4">
+    <h3 class="text-center mb-3">Booking <%= status === "paid" ? "Confirmed" : "Details" %></h3>
+    <p class="text-center"><span class="badge bg-<%= badge %> fs-6"><%= label %></span></p>
+
+    <% if (status === "failed") { %>
+      <div class="alert alert-danger">The payment did not go through. You have not been charged for a confirmed booking.
+        <a href="/listings/<%= booking.listing ? booking.listing._id : "" %>/book">Try again</a>.</div>
+    <% } else if (status === "created") { %>
+      <div class="alert alert-warning">This booking has not been paid yet.</div>
+    <% } %>
+
+    <table class="table">
+      <tbody>
+        <tr><th>Property</th><td><%= booking.listing ? booking.listing.title : "Listing no longer available" %></td></tr>
+        <% if (booking.listing) { %>
+          <tr><th>Location</th><td><%= booking.listing.location %>, <%= booking.listing.country %></td></tr>
+        <% } %>
+        <tr><th>Check-in</th><td><%= day(booking.checkIn) %></td></tr>
+        <tr><th>Check-out</th><td><%= day(booking.checkOut) %></td></tr>
+        <tr><th>Nights</th><td><%= booking.nights %></td></tr>
+        <tr><th>Guests</th><td><%= booking.guests %></td></tr>
+        <tr><th>Amount</th><td><%= (booking.currency === "INR" ? "₹" : booking.currency + " ") + (booking.amount / 100).toLocaleString("en-IN") %></td></tr>
+        <tr><th>Booking ID</th><td><code><%= booking._id %></code></td></tr>
+        <% if (booking.razorpayOrderId) { %>
+          <tr><th>Order ID</th><td><code><%= booking.razorpayOrderId %></code></td></tr>
+        <% } %>
+        <% if (booking.razorpayPaymentId) { %>
+          <tr><th>Payment ID</th><td><code><%= booking.razorpayPaymentId %></code></td></tr>
+        <% } %>
+      </tbody>
+    </table>
+
+    <div class="text-center">
+      <a href="/listings" class="btn btn-dark">Back to listings</a>
+    </div>
+  </div>
+</div>

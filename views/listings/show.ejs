@@ -1,7 +1,10 @@
 <% layout("layouts/boilerplate") %>
   <script>
     const mapToken = "<%= process.env.MAP_TOKEN %>";
-    const listing = <%- JSON.stringify(listing)%>;
+    // Only the fields map.js needs; "<", ">", "&" and line separators are escaped so the JSON cannot close the script tag.
+    const listing = <%- JSON.stringify({ title: listing.title, geometry: listing.geometry })
+      .replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026")
+      .replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029") %>;
   </script>
 
   <div class="row mt-3">
@@ -17,7 +20,7 @@
         <h4 class="card-text text-center mt-3">
           Owner-
           <b>
-            <%= listing.owner.username %>
+            <%= listing.owner ? listing.owner.username : "Owner unavailable" %>
           </b>
         </h4>
         <p class="card-text text-left">"<%= listing.description %>"</p>
@@ -34,7 +37,7 @@
     </div>
 
     <div class="col-12 d-flex justify-content-center mb-4">
-      <% if(currUser && listing.owner._id.equals(currUser._id)) { %>
+      <% if(currUser && listing.owner && listing.owner._id.equals(currUser._id)) { %>
         <div class="btn-group" role="group">
           <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark mx-2 edit-btn">Edit</a>
           <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" class="d-inline">
@@ -42,7 +45,7 @@
           </form>
         </div>
         <% } else { %>
-          <a href="/listings/order" class="btn btn-dark mx-2 edit-btn">Book</a>
+          <a href="/listings/<%= listing._id %>/book" class="btn btn-dark mx-2 edit-btn">Book</a>
           <% } %>
     </div>
 
@@ -82,13 +85,13 @@
               <% for(review of listing.reviews) { %>
                 <div class="card col-lg-5 col-md-6 col-sm-12 mx-auto mb-3 p-3 shadow">
                   <div class="card-body">
-                    <h5 class="card-title">@<%= review.author.username %>
+                    <h5 class="card-title">@<%= review.author ? review.author.username : "deleted user" %>
                     </h5>
                     <p class="starability-result card-text" data-rating="<%= review.rating %>"></p>
                     <p class="card-text">
                       <%= review.comment %>
                     </p>
-                    <% if(currUser && review.author._id.equals(currUser._id)) { %>
+                    <% if(currUser && review.author && review.author._id.equals(currUser._id)) { %>
                       <form class="mb-3" method="POST"
                         action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
                         <button class="btn btn-sm btn-dark">Delete</button>

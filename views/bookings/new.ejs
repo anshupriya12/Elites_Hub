@@ -1,0 +1,50 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row my-5">
+  <div class="col-lg-6 col-md-10 col-sm-12 mx-auto shadow rounded p-4">
+    <h3 class="text-center mb-3">Book Your Stay</h3>
+    <p class="text-center mb-1"><b><%= listing.title %></b></p>
+    <p class="text-center text-muted">
+      <%= listing.location %>, <%= listing.country %> &middot;
+      &#8377;<%= listing.price.toLocaleString("en-IN") %> / night
+    </p>
+
+    <% if (!paymentsConfigured) { %>
+      <div class="alert alert-warning" role="alert">
+        Online payments are not configured yet, so booking is unavailable.
+      </div>
+    <% } %>
+
+    <form id="booking-form" data-listing-id="<%= listing._id %>" data-price="<%= listing.price %>" novalidate>
+      <div class="row">
+        <div class="mb-3 col-md-6">
+          <label for="checkIn" class="form-label">Check-in</label>
+          <input type="date" id="checkIn" name="booking[checkIn]" class="form-control" required />
+        </div>
+        <div class="mb-3 col-md-6">
+          <label for="checkOut" class="form-label">Check-out</label>
+          <input type="date" id="checkOut" name="booking[checkOut]" class="form-control" required />
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="guests" class="form-label">Guests</label>
+        <input type="number" id="guests" name="booking[guests]" class="form-control" min="1" max="20" value="1" required />
+      </div>
+
+      <p class="mb-1">Estimated total: <b id="estimate">&mdash;</b></p>
+      <p class="text-muted small">
+        The final amount is calculated by our server from the listing's nightly price when you pay.
+        Payments run in Razorpay Test Mode.
+      </p>
+
+      <div id="booking-error" class="alert alert-danger d-none" role="alert"></div>
+
+      <button type="submit" id="pay-btn" class="btn btn-dark w-100" <%= paymentsConfigured ? "" : "disabled" %>>
+        Pay with Razorpay
+      </button>
+    </form>
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="/js/booking.js"></script>

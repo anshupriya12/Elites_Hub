@@ -1,7 +1,9 @@
 const Listing = require("../models/listing.js");
 const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
 const mapToken = process.env.MAP_TOKEN;
-const geocodingClient = mbxGeocoding({ accessToken: mapToken });
+const isValidId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
+// The Mapbox client throws at creation without a token; only build it when MAP_TOKEN is set.
+const geocodingClient = mapToken ? mbxGeocoding({ accessToken: mapToken }) : null;
 
 module.exports.index = async (req, res) => {
   const allListings = await Listing.find({});
@@ -15,22 +17,31 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.showListing = async (req, res) => {
   let { id } = req.params;
+  if (!isValidId(id)) {
+    req.flash("error", "Listing does not exist!");
+    return res.redirect("/listings");
+  }
+  // Only username is populated for users, so hash/salt are never loaded into the view.
   const listing = await Listing.findById(id)
     .populate({
       path: "reviews",
       populate: {
         path: "author",
+        select: "username",
       },
     })
-    .populate("owner");
+    .populate("owner", "username");
   if (!listing) {
     req.flash("error", "Listing does not exist!");
-    res.redirect("/listings");
+    return res.redirect("/listings");
   }
   res.render("listings/show.ejs", { listing });
 };
 
 module.exports.createListing = async (req, res, next) => {
+  if (!geocodingClient) {
+    throw new Error("MAP_TOKEN is not configured; cannot create listings.");
+  }
   let response = await geocodingClient
     .forwardGeocode({
       query: req.body.listing.location,
@@ -56,10 +67,10 @@ module.exports.createListing = async (req, res, next) => {
 
 module.exports.renderEditForm = async (req, res) => {
   let { id } = req.params;
-  const listing = await Listing.findById(id);
+  const listing = isValidId(id) ? await Listing.findById(id) : null;
   if (!listing) {
     req.flash("error", "Listing does not exist!");
-    res.redirect("/listings");
+    return res.redirect("/listings");
   }
 
   let originalImageUrl = listing.image.url;

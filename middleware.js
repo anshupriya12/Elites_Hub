@@ -12,6 +12,14 @@ module.exports.isLoggedIn = (req, res, next) => {
   next();
 };
 
+// For fetch/JSON endpoints: answer 401 JSON instead of redirecting to the login page.
+module.exports.isLoggedInJson = (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ error: "Please log in to continue." });
+  }
+  next();
+};
+
 module.exports.saveRedirectUrl = (req, res, next) => {
   if (req.session.redirectUrl) {
     res.locals.redirectUrl = req.session.redirectUrl;
@@ -19,14 +27,25 @@ module.exports.saveRedirectUrl = (req, res, next) => {
   next();
 };
 
+const isValidId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
+
 module.exports.isOwner = async (req, res, next) => {
-  let { id } = req.params;
-  let listing = await Listing.findById(id);
-  if (!listing.owner._id.equals(res.locals.currUser._id)) {
-    req.flash("error", "Only the owner can edit/delete the listing");
-    return res.redirect(`/listings/${id}`);
+  try {
+    let { id } = req.params;
+    let listing = isValidId(id) ? await Listing.findById(id) : null;
+    if (!listing) {
+      req.flash("error", "Listing does not exist!");
+      return res.redirect("/listings");
+    }
+    // A listing with no owner can't be edited/deleted by anyone until its data is repaired.
+    if (!listing.owner || !listing.owner.equals(res.locals.currUser._id)) {
+      req.flash("error", "Only the owner can edit/delete the listing");
+      return res.redirect(`/listings/${id}`);
+    }
+    next();
+  } catch (err) {
+    next(err);
   }
-  next();
 };
 
 module.exports.validateListing = (req, res, next) => {
@@ -50,11 +69,19 @@ module.exports.validateReview = (req, res, next) => {
 };
 
 module.exports.isReviewAuthor = async (req, res, next) => {
-  let { id, reviewId } = req.params;
-  let review = await Review.findById(reviewId);
-  if (!review.author.equals(res.locals.currUser._id)) {
-    req.flash("error", "Only the author can delete the review");
-    return res.redirect(`/listings/${id}`);
+  try {
+    let { id, reviewId } = req.params;
+    let review = isValidId(reviewId) ? await Review.findById(reviewId) : null;
+    if (!review) {
+      req.flash("error", "Review does not exist!");
+      return res.redirect(isValidId(id) ? `/listings/${id}` : "/listings");
+    }
+    if (!review.author || !review.author.equals(res.locals.currUser._id)) {
+      req.flash("error", "Only the author can delete the review");
+      return res.redirect(`/listings/${id}`);
+    }
+    next();
+  } catch (err) {
+    next(err);
   }
-  next();
 };
