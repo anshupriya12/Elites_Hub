@@ -137,7 +137,7 @@ module.exports.updateListing = async (req, res) => {
     await deleteUploadedImage(uploaded);
     throw err;
   }
-  req.flash("success", "Listing Updated");
+  req.flash("success", "Changes saved successfully.");
   res.redirect(`/listings/${id}`);
 };
 

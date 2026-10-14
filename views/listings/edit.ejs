@@ -1,8 +1,11 @@
 <% layout("/layouts/boilerplate")%>
 <div class="row my-5 ">
   <div class="col-8 offset-2 shadow rounded p-5">
-    <h3 class="text-center"font-weight-bold>Edit your Listing</h3>
+    <a href="/listings/<%= listing._id %>" class="btn btn-outline-dark btn-sm mb-3 back-link">&larr; Back to listing</a>
+    <h3 class="text-center fw-bold">Edit your Listing</h3>
     <form
+      id="edit-listing-form"
+      data-unsaved-guard
       method="POST"
       action="/listings/<%= listing._id %>?_method=PUT"
       novalidate
@@ -12,19 +15,19 @@
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
         <input
+          id="title"
           name="listing[title]"
           value="<%= listing.title %>"
           type="text"
           class="form-control"
+          maxlength="100"
           required
         />
         <div class="invalid-feedback">Enter Title</div>
       </div>
       <div class="mb-3">
         <label for="description" class="form-label">Description</label>
-        <textarea name="listing[description]" class="form-control" required>
-          <%= listing.description %></textarea
-        >
+        <textarea id="description" name="listing[description]" class="form-control" maxlength="2000" required><%= listing.description %></textarea>
         <div class="invalid-feedback">Enter Description</div>
       </div>
 
@@ -39,13 +42,14 @@
 
       <div class="mb-3">
         <label for="image" class="form-label">Upload New Image</label>
-        <input name="listing[image]" type="file" accept="image/png,image/jpeg,image/webp" class="form-control" />
+        <input id="image" name="listing[image]" type="file" accept="image/png,image/jpeg,image/webp" class="form-control" />
       </div>
 
       <div class="row">
         <div class="mb-3 col-md-4">
           <label for="price" class="form-label">Price</label>
           <input
+            id="price"
             name="listing[price]"
             value="<%= listing.price %>"
             type="number"
@@ -60,10 +64,12 @@
         <div class="mb-3 col-md-8">
           <label for="country" class="form-label">Country</label>
           <input
+            id="country"
             name="listing[country]"
             value="<%= listing.country %>"
             type="text"
             class="form-control"
+            maxlength="60"
             required
           />
           <div class="invalid-feedback">Enter Country</div>
@@ -73,15 +79,24 @@
       <div class="mb-3">
         <label for="location" class="form-label">Location</label>
         <input
+          id="location"
           name="listing[location]"
           value="<%= listing.location %>"
           type="text"
           class="form-control"
+          maxlength="100"
           required
         />
         <div class="invalid-feedback">Enter Location</div>
       </div>
-      <button class="btn btn-dark edit-btn mt-3">Edit</button>
+
+      <div class="d-flex flex-wrap align-items-center gap-3 mt-3">
+        <button type="submit" class="btn btn-dark edit-btn">Save Changes</button>
+        <a href="/listings/<%= listing._id %>" class="btn btn-outline-dark">Cancel</a>
+        <span id="unsaved-notice" class="text-danger small d-none" role="status">You have unsaved changes.</span>
+      </div>
     </form>
   </div>
 </div>
+
+<script src="/js/unsaved-guard.js"></script>
