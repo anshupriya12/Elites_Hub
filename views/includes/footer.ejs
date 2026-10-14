@@ -1,35 +1,36 @@
-<footer class="bg-dark text-white py-5">
+<footer class="site-footer">
   <div class="container">
-    <div class="row">
-      <div class="col-md-4">
-        <h5>About Us</h5>
-        <p>Elites Estates Hub is a premier real estate agency dedicated to helping you find your dream home.</p>
+    <div class="row g-4">
+      <div class="col-12 col-md-5">
+        <h2>Elites Hub</h2>
+        <p class="mb-2">Discover properties across India's major cities, search by city and price, or list your own property.</p>
+        <p class="footer-note mb-0">
+          Properties marked <strong>Sample listing</strong> are fictional examples for demonstration. They are not real,
+          verified, available to book, or actual offers. Their photographs are illustrative stock images from
+          <a href="https://unsplash.com/license" rel="noopener" target="_blank">Unsplash</a> and do not show the properties.
+        </p>
       </div>
-      <div class="col-md-4">
-        <h5>Quick Links</h5>
-        <ul class="list-unstyled">
-          <li><a href="#" class="text-white">Home</a></li>
-          <li><a href="#" class="text-white">Properties</a></li>
-          <li><a href="#" class="text-white">About</a></li>
-          <li><a href="#" class="text-white">Contact</a></li>
+      <nav class="col-6 col-md-3 offset-md-1" aria-label="Explore">
+        <h2>Explore</h2>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/listings">All properties</a></li>
+          <li><a href="/listings/new">List your property</a></li>
         </ul>
-      </div>
-      <div class="col-md-4">
-        <h5>Connect With Us</h5>
-        <ul class="list-inline">
-          <li class="list-inline-item"><a href="#" class="text-white"><i class="fab fa-facebook fa-2x"></i></a></li>
-          <li class="list-inline-item"><a href="#" class="text-white"><i class="fab fa-twitter fa-2x"></i></a>
-          </li>
-          <li class="list-inline-item"><a href="#" class="text-white"><i class="fab fa-instagram fa-2x"></i></a></li>
-          <li class="list-inline-item"><a href="#" class="text-white"><i class="fab fa-linkedin fa-2x"></i></a></li>
+      </nav>
+      <nav class="col-6 col-md-3" aria-label="Account">
+        <h2>Account</h2>
+        <ul>
+          <% if (!currUser) { %>
+            <li><a href="/login">Log in</a></li>
+            <li><a href="/signup">Sign up</a></li>
+          <% } else { %>
+            <li><a href="/logout">Log out</a></li>
+          <% } %>
         </ul>
-      </div>
+      </nav>
     </div>
-    <hr class="mb-4">
-    <div class="row">
-      <div class="col-md-12 text-center">
-        <p>&copy; 2023 Elites Estates Hub. All rights reserved.</p>
-      </div>
-    </div>
+    <hr />
+    <p class="footer-note mb-0">&copy; <%= new Date().getFullYear() %> Elites Hub. All rights reserved.</p>
   </div>
 </footer>

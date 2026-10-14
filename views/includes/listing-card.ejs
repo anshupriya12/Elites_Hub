@@ -1,0 +1,33 @@
+<%# Expects: listing, and photo (the resolvePropertyImage helper passed down by the controller). %>
+<% const img = photo(listing); %>
+<article class="property-card">
+  <a href="/listings/<%= listing._id %>" class="listing-link" aria-label="View property: <%= listing.title %>, <%= listing.location %>">
+    <div class="property-card__media is-loading-img">
+      <img
+        src="<%= img.src %>"
+        alt="<%= img.alt %>"
+        width="900"
+        height="675"
+        loading="lazy"
+        decoding="async"
+        onload="this.parentNode.classList.remove('is-loading-img')"
+        onerror="this.onerror=null;this.src='/images/placeholder-property.svg';this.parentNode.classList.remove('is-loading-img')"
+      />
+      <% if (listing.isDemo) { %>
+        <span class="sample-badge">Sample listing</span>
+      <% } %>
+    </div>
+    <div class="property-card__body">
+      <h3 class="property-card__title"><%= listing.title %></h3>
+      <p class="property-card__location">
+        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+        <span class="visually-hidden">Location: </span><%= listing.location %>
+      </p>
+      <p class="property-card__price">
+        <strong>&#8377;<%= (Number(listing.price) || 0).toLocaleString("en-IN") %></strong>
+        <span>/night<i class="tax-info"> &nbsp;+18% GST</i></span>
+      </p>
+      <span class="property-card__cta">View Property <span class="cta-arrow" aria-hidden="true">&rarr;</span></span>
+    </div>
+  </a>
+</article>

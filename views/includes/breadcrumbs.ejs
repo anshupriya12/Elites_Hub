@@ -1,0 +1,10 @@
+<%# Usage: include("../includes/breadcrumbs.ejs", { crumbs: [{ label: "Home", href: "/" }, { label: "Properties", href: "/listings" }, { label: "This page" }] }) %>
+<nav aria-label="Breadcrumb">
+  <ol class="breadcrumb eh-breadcrumb">
+    <% crumbs.forEach(function (crumb, i) { const last = i === crumbs.length - 1; %>
+      <li class="breadcrumb-item<%= last ? " active" : "" %>"<%- last ? ' aria-current="page"' : "" %>>
+        <% if (!last && crumb.href) { %><a href="<%= crumb.href %>"><%= crumb.label %></a><% } else { %><%= crumb.label %><% } %>
+      </li>
+    <% }) %>
+  </ol>
+</nav>

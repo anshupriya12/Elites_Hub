@@ -7,6 +7,12 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  // Google account id (the stable "sub" claim). Absent for users who only use a username and password.
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
 });
 
 userSchema.plugin(passportLocalMongoose);

@@ -1,10 +1,13 @@
 <% layout("/layouts/boilerplate") %>
 
-<div class="row my-5">
-  <div class="col-lg-6 col-md-10 col-sm-12 mx-auto shadow rounded p-4">
-    <h3 class="text-center mb-3">Book Your Stay</h3>
-    <p class="text-center mb-1"><b><%= listing.title %></b></p>
-    <p class="text-center text-muted">
+<%- include("../includes/breadcrumbs.ejs", { crumbs: [{ label: "Home", href: "/" }, { label: "Properties", href: "/listings" }, { label: listing.title, href: "/listings/" + listing._id }, { label: "Book" }] }) %>
+
+<div class="form-page">
+  <div class="form-card">
+    <a href="/listings/<%= listing._id %>" class="btn btn-sm btn-eh-outline mb-3 back-link">&larr; Back to property</a>
+    <h1 class="h2">Book Your Stay</h1>
+    <p class="mb-1"><b><%= listing.title %></b></p>
+    <p class="text-muted">
       <%= listing.location %>, <%= listing.country %> &middot;
       &#8377;<%= listing.price.toLocaleString("en-IN") %> / night
     </p>
@@ -39,7 +42,7 @@
 
       <div id="booking-error" class="alert alert-danger d-none" role="alert"></div>
 
-      <button type="submit" id="pay-btn" class="btn btn-dark w-100" <%= paymentsConfigured ? "" : "disabled" %>>
+      <button type="submit" id="pay-btn" class="btn btn-eh btn-lg w-100" <%= paymentsConfigured ? "" : "disabled" %>>
         Pay with Razorpay
       </button>
     </form>

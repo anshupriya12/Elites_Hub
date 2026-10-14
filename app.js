@@ -20,6 +20,8 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const bookingRouter = require("./routes/booking.js");
+const googleRouter = require("./routes/google.js");
+const homeRouter = require("./routes/home.js");
 const listingController = require("./controllers/listing.js");
 const compression = require('compression');
 
@@ -75,28 +77,24 @@ const sessionOptions = {
   },
 };
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "homepage.html"));
-});
-
 app.use(session(sessionOptions));
 app.use(flash());
 app.use(compression());
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
-
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+// Session serialization (user _id only) is configured in passport.js and shared by local and Google logins.
 
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   res.locals.currUser = req.user;
+  res.locals.currentPath = req.path; // lets the shared navbar mark the current section
   next();
 });
 
 
+app.use("/", homeRouter); // homepage with featured properties (rendered after the session/locals middleware)
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", bookingRouter);
@@ -111,16 +109,11 @@ app.use(cacheController({
 }));
 
 app.get("/failed", (req, res) => {
-    res.render("errors");
+    res.status(400).render("errors", { status: 400, message: "Sign-in failed. Please try again.", pageTitle: "Sign-in failed" });
 });
 
-app.get("/google", passport.authenticate("google", { scope: ['profile', 'email'] }));
-
-app.get("/google/callback", passport.authenticate("google", { failureRedirect: '/failed' }),
-    (req, res) => {
-        res.redirect("/success");
-    }
-);
+// /google and /google/callback (the redirect URI registered with Google)
+app.use("/", googleRouter);
 
 
 app.all("*", (req, res, next) => {
@@ -129,7 +122,7 @@ app.all("*", (req, res, next) => {
 
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something went Wrong!" } = err;
-  res.status(statusCode).render("errors.ejs", { message });
+  res.status(statusCode).render("errors.ejs", { message, status: statusCode, pageTitle: statusCode === 404 ? "Page not found" : "Something went wrong" });
 });
 
 app.listen(8080, () => {

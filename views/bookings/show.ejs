@@ -3,14 +3,16 @@
 <%
   const day = (d) => d.toISOString().slice(0, 10);
   const status = booking.paymentStatus;
-  const badge = status === "paid" ? "success" : status === "failed" ? "danger" : "warning";
+  const pill = status === "paid" ? "status-paid" : status === "failed" ? "status-failed" : "status-pending";
   const label = status === "paid" ? "Paid" : status === "failed" ? "Payment failed" : "Payment pending";
 %>
 
-<div class="row my-5">
-  <div class="col-lg-6 col-md-10 col-sm-12 mx-auto shadow rounded p-4">
-    <h3 class="text-center mb-3">Booking <%= status === "paid" ? "Confirmed" : "Details" %></h3>
-    <p class="text-center"><span class="badge bg-<%= badge %> fs-6"><%= label %></span></p>
+<%- include("../includes/breadcrumbs.ejs", { crumbs: [{ label: "Home", href: "/" }, { label: "Properties", href: "/listings" }, { label: "Booking" }] }) %>
+
+<div class="form-page">
+  <div class="form-card">
+    <h1 class="h2 text-center">Booking <%= status === "paid" ? "Confirmed" : "Details" %></h1>
+    <p class="text-center"><span class="status-pill <%= pill %>"><%= label %></span></p>
 
     <% if (status === "failed") { %>
       <div class="alert alert-danger">The payment did not go through. You have not been charged for a confirmed booking.
@@ -19,29 +21,30 @@
       <div class="alert alert-warning">This booking has not been paid yet.</div>
     <% } %>
 
-    <table class="table">
+    <table class="table booking-table">
       <tbody>
-        <tr><th>Property</th><td><%= booking.listing ? booking.listing.title : "Listing no longer available" %></td></tr>
+        <tr><th scope="row">Property</th><td><%= booking.listing ? booking.listing.title : "Listing no longer available" %></td></tr>
         <% if (booking.listing) { %>
-          <tr><th>Location</th><td><%= booking.listing.location %>, <%= booking.listing.country %></td></tr>
+          <tr><th scope="row">Location</th><td><%= booking.listing.location %>, <%= booking.listing.country %></td></tr>
         <% } %>
-        <tr><th>Check-in</th><td><%= day(booking.checkIn) %></td></tr>
-        <tr><th>Check-out</th><td><%= day(booking.checkOut) %></td></tr>
-        <tr><th>Nights</th><td><%= booking.nights %></td></tr>
-        <tr><th>Guests</th><td><%= booking.guests %></td></tr>
-        <tr><th>Amount</th><td><%= (booking.currency === "INR" ? "₹" : booking.currency + " ") + (booking.amount / 100).toLocaleString("en-IN") %></td></tr>
-        <tr><th>Booking ID</th><td><code><%= booking._id %></code></td></tr>
+        <tr><th scope="row">Check-in</th><td><%= day(booking.checkIn) %></td></tr>
+        <tr><th scope="row">Check-out</th><td><%= day(booking.checkOut) %></td></tr>
+        <tr><th scope="row">Nights</th><td><%= booking.nights %></td></tr>
+        <tr><th scope="row">Guests</th><td><%= booking.guests %></td></tr>
+        <tr><th scope="row">Amount</th><td><%= (booking.currency === "INR" ? "₹" : booking.currency + " ") + (booking.amount / 100).toLocaleString("en-IN") %></td></tr>
+        <tr><th scope="row">Booking ID</th><td><code><%= booking._id %></code></td></tr>
         <% if (booking.razorpayOrderId) { %>
-          <tr><th>Order ID</th><td><code><%= booking.razorpayOrderId %></code></td></tr>
+          <tr><th scope="row">Order ID</th><td><code><%= booking.razorpayOrderId %></code></td></tr>
         <% } %>
         <% if (booking.razorpayPaymentId) { %>
-          <tr><th>Payment ID</th><td><code><%= booking.razorpayPaymentId %></code></td></tr>
+          <tr><th scope="row">Payment ID</th><td><code><%= booking.razorpayPaymentId %></code></td></tr>
         <% } %>
       </tbody>
     </table>
 
-    <div class="text-center">
-      <a href="/listings" class="btn btn-dark">Back to listings</a>
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+      <a href="/listings" class="btn btn-eh">Back to listings</a>
+      <a href="/" class="btn btn-eh-outline">Back to Home</a>
     </div>
   </div>
 </div>

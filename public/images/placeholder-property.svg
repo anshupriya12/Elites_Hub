@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="675" viewBox="0 0 900 675" role="img" aria-label="Property photo unavailable">
+  <rect width="900" height="675" fill="#e9edf3"/>
+  <g fill="none" stroke="#9aa6b8" stroke-width="10" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M300 345 L450 235 L600 345"/>
+    <path d="M330 325 V440 H570 V325"/>
+    <path d="M420 440 V375 H480 V440"/>
+  </g>
+  <text x="450" y="500" font-family="Arial, Helvetica, sans-serif" font-size="30" fill="#6b778a" text-anchor="middle">Photo unavailable</text>
+</svg>
