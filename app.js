@@ -21,6 +21,7 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const bookingRouter = require("./routes/booking.js");
 const googleRouter = require("./routes/google.js");
+const homeRouter = require("./routes/home.js");
 const listingController = require("./controllers/listing.js");
 const compression = require('compression');
 
@@ -76,10 +77,6 @@ const sessionOptions = {
   },
 };
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "homepage.html"));
-});
-
 app.use(session(sessionOptions));
 app.use(flash());
 app.use(compression());
@@ -96,6 +93,7 @@ app.use((req, res, next) => {
 });
 
 
+app.use("/", homeRouter); // homepage with featured properties (rendered after the session/locals middleware)
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", bookingRouter);

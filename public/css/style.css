@@ -99,6 +99,44 @@ body {
   color: #ffffff !important;
 }
 
+/* Prices after tax are shown only when the toggle is switched on */
+.tax-info {
+  display: none;
+}
+
+/* Sample/demo listing badge on cards */
+.sample-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+}
+
+/* Homepage hero */
+.home-hero {
+  background: linear-gradient(rgba(29, 53, 87, 0.75), rgba(29, 53, 87, 0.75)), url("/bg.jpg") center / cover no-repeat;
+  padding: 5rem 1rem;
+}
+.home-search {
+  max-width: 560px;
+}
+/* Comfortable on phones by default; larger on tablets and desktops */
+@media (min-width: 576px) {
+  .home-search .form-control,
+  .home-search .btn {
+    padding: 0.75rem 1rem;
+    font-size: 1.15rem;
+  }
+}
+@media (max-width: 575.98px) {
+  .home-hero {
+    padding: 3rem 0.5rem;
+  }
+  .home-hero h1 {
+    font-size: 1.9rem;
+  }
+}
+
 /* Show Page */
 .show-img {
   height: 30vh;

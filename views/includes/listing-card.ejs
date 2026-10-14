@@ -1,0 +1,27 @@
+<a href="/listings/<%= listing._id %>" class="listing-link">
+  <div class="card col listing-card shadow">
+    <% if (listing.image && listing.image.url) { %>
+      <img
+        src="<%= listing.image.url %>"
+        class="card-img-top rounded-bottom"
+        alt="<%= listing.title %>"
+        style="aspect-ratio: 4 / 3; height: auto"
+        loading="lazy"
+      />
+    <% } else { %>
+      <div class="card-img-top rounded-bottom bg-light d-flex align-items-center justify-content-center text-muted" style="aspect-ratio: 4 / 3">No image</div>
+    <% } %>
+    <% if (listing.isDemo) { %>
+      <span class="badge bg-warning text-dark sample-badge">Sample listing</span>
+    <% } %>
+    <div class="card-img-overlay"></div>
+    <div class="card-body my-3">
+      <p class="card-text text-center">
+        <b><%= listing.title %></b><br />
+        <span class="text-muted"><%= listing.location %></span><br />
+        &#8377;<%= (Number(listing.price) || 0).toLocaleString("en-IN") %>/night
+        <i class="tax-info"> &nbsp;+18% GST</i>
+      </p>
+    </div>
+  </div>
+</a>

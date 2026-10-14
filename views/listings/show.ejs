@@ -18,12 +18,20 @@
     </div>
 
     <div class="card col-lg-6 col-md-10 col-sm-12 mx-auto listing-card mb-4">
-      <img src="<%= listing.image.url %>" class="card-img-top show-img img-fluid" alt="listing_image" />
+      <% if (listing.image && listing.image.url) { %>
+        <img src="<%= listing.image.url %>" class="card-img-top show-img img-fluid" alt="<%= listing.title %>" />
+      <% } %>
       <div class="card-body">
+        <% if (listing.isDemo) { %>
+          <div class="alert alert-warning mt-3 mb-0 sample-notice" role="note">
+            <b>Sample listing.</b> This is an illustration for demonstration only. It is not a real property, is not
+            available for booking, and is not an actual offer.
+          </div>
+        <% } %>
         <h4 class="card-text text-center mt-3">
           Owner-
           <b>
-            <%= listing.owner ? listing.owner.username : "Owner unavailable" %>
+            <%= listing.owner ? listing.owner.username : (listing.isDemo ? "Elites Hub (sample listing)" : "Owner unavailable") %>
           </b>
         </h4>
         <p class="card-text text-left">"<%= listing.description %>"</p>
@@ -47,7 +55,7 @@
             <button class="btn btn-dark">Delete</button>
           </form>
         </div>
-        <% } else { %>
+        <% } else if (!listing.isDemo) { %>
           <a href="/listings/<%= listing._id %>/book" class="btn btn-dark mx-2 edit-btn">Book</a>
           <% } %>
     </div>

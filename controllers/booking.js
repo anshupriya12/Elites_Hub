@@ -26,6 +26,10 @@ module.exports.renderBookingForm = async (req, res) => {
     req.flash("error", "Listing does not exist!");
     return res.redirect("/listings");
   }
+  if (listing.isDemo) {
+    req.flash("error", "Sample listings are for demonstration only and cannot be booked.");
+    return res.redirect(`/listings/${id}`);
+  }
   if (listing.owner && req.user._id && listing.owner.equals(req.user._id)) {
     req.flash("error", "You cannot book your own listing.");
     return res.redirect(`/listings/${id}`);
@@ -51,6 +55,9 @@ module.exports.createBooking = async (req, res) => {
   const listing = isValidId(id) ? await Listing.findById(id) : null;
   if (!listing) {
     return res.status(404).json({ error: "Listing does not exist." });
+  }
+  if (listing.isDemo) {
+    return res.status(403).json({ error: "Sample listings are for demonstration only and cannot be booked." });
   }
   if (listing.owner && listing.owner.equals(req.user._id)) {
     return res.status(403).json({ error: "You cannot book your own listing." });

@@ -38,6 +38,17 @@ const listingSchema = new Schema({
       required: true,
     },
   },
+  // Sample/demo listings (see init/seedDemo.js). They have no owner and cannot be booked, edited or deleted.
+  isDemo: {
+    type: Boolean,
+    default: false,
+  },
+  // Stable identifier that makes seeding idempotent. Only demo listings have one.
+  demoKey: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
 });
 
 listingSchema.post("findOneAndDelete", async (listing) => {

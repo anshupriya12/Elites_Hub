@@ -34,9 +34,70 @@ const geocodeLocation = async (location, country) => {
   return features[0].geometry;
 };
 
+const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const MAX_FILTER_PRICE = 10000000;
+
+// Reads a price filter from the query string: a number, null (not provided) or NaN (provided but invalid).
+const readPrice = (value) => {
+  if (typeof value !== "string" || value.trim() === "") return null;
+  const n = Number(value);
+  return Number.isFinite(n) && n >= 0 && n <= MAX_FILTER_PRICE ? n : NaN;
+};
+
+// Search by location/title and filter by price range. Query values that are not plain strings (for example
+// ?q[$ne]=x) are ignored, and the search text is escaped, so it can never be used as a Mongo operator or regex.
 module.exports.index = async (req, res) => {
-  const allListings = await Listing.find({});
-  res.render("listings/index.ejs", { allListings });
+  const q = typeof req.query.q === "string" ? req.query.q.trim().slice(0, 100) : "";
+  let minPrice = readPrice(req.query.minPrice);
+  let maxPrice = readPrice(req.query.maxPrice);
+  const notices = [];
+  if (Number.isNaN(minPrice)) { notices.push("The minimum price was not a valid number and was ignored."); minPrice = null; }
+  if (Number.isNaN(maxPrice)) { notices.push("The maximum price was not a valid number and was ignored."); maxPrice = null; }
+
+  const query = {};
+  if (q) {
+    const rx = new RegExp(escapeRegex(q), "i");
+    query.$or = [{ location: rx }, { country: rx }, { title: rx }];
+  }
+  const invalidRange = minPrice !== null && maxPrice !== null && minPrice > maxPrice;
+  if (invalidRange) {
+    notices.push("The minimum price is higher than the maximum price, so nothing can match.");
+  } else if (minPrice !== null || maxPrice !== null) {
+    query.price = {};
+    if (minPrice !== null) query.price.$gte = minPrice;
+    if (maxPrice !== null) query.price.$lte = maxPrice;
+  }
+
+  const allListings = invalidRange ? [] : await Listing.find(query).sort({ _id: -1 });
+
+  // Active filters, each with a link that removes just that filter.
+  const params = {};
+  if (q) params.q = q;
+  if (minPrice !== null) params.minPrice = String(minPrice);
+  if (maxPrice !== null) params.maxPrice = String(maxPrice);
+  const without = (key) => {
+    const rest = new URLSearchParams(Object.entries(params).filter(([k]) => k !== key)).toString();
+    return rest ? `/listings?${rest}` : "/listings";
+  };
+  const inr = (n) => `₹${n.toLocaleString("en-IN")}`;
+  const activeFilters = [];
+  if (q) activeFilters.push({ label: `Location: ${q}`, removeUrl: without("q") });
+  if (minPrice !== null) activeFilters.push({ label: `Min price: ${inr(minPrice)}`, removeUrl: without("minPrice") });
+  if (maxPrice !== null) activeFilters.push({ label: `Max price: ${inr(maxPrice)}`, removeUrl: without("maxPrice") });
+
+  res.locals.searchQuery = q; // pre-fills the navbar search box
+  res.render("listings/index.ejs", {
+    allListings,
+    filters: { q, minPrice: minPrice === null ? "" : minPrice, maxPrice: maxPrice === null ? "" : maxPrice },
+    activeFilters,
+    notices,
+  });
+};
+
+// Homepage: a few of the newest properties as featured cards.
+module.exports.home = async (req, res) => {
+  const featured = await Listing.find({}).sort({ _id: -1 }).limit(6);
+  res.render("home.ejs", { featured });
 };
 
 

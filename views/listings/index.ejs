@@ -33,6 +33,40 @@
   }
 </style>
 
+<form action="/listings" method="get" class="filter-bar card card-body shadow-sm my-3" role="search" aria-label="Search and filter properties">
+  <div class="row g-2 align-items-end">
+    <div class="col-12 col-md-5">
+      <label for="q" class="form-label small mb-1">City or location</label>
+      <input id="q" name="q" type="search" class="form-control" maxlength="100" placeholder="e.g. Goa, Jaipur" value="<%= filters.q %>" />
+    </div>
+    <div class="col-6 col-md-2">
+      <label for="minPrice" class="form-label small mb-1">Min price (&#8377;)</label>
+      <input id="minPrice" name="minPrice" type="number" min="0" step="any" class="form-control" value="<%= filters.minPrice %>" />
+    </div>
+    <div class="col-6 col-md-2">
+      <label for="maxPrice" class="form-label small mb-1">Max price (&#8377;)</label>
+      <input id="maxPrice" name="maxPrice" type="number" min="0" step="any" class="form-control" value="<%= filters.maxPrice %>" />
+    </div>
+    <div class="col-12 col-md-3 d-grid">
+      <button class="btn add-btn" type="submit">Search</button>
+    </div>
+  </div>
+</form>
+
+<% notices.forEach(function (notice) { %>
+  <div class="alert alert-warning py-2 notice" role="alert"><%= notice %></div>
+<% }) %>
+
+<% if (activeFilters.length) { %>
+  <div class="active-filters d-flex flex-wrap align-items-center gap-2 mb-2" aria-label="Active filters">
+    <span class="small text-muted">Active filters:</span>
+    <% activeFilters.forEach(function (f) { %>
+      <a class="badge rounded-pill text-bg-secondary text-decoration-none" href="<%= f.removeUrl %>" title="Remove this filter"><%= f.label %> &times;</a>
+    <% }) %>
+    <a href="/listings" class="small clear-filters">Clear Filters</a>
+  </div>
+<% } %>
+
 <div id="filters" class="d-none d-md-flex justify-content-center align-items-center">
   <div class="filter">
     <div>
@@ -114,28 +148,29 @@
     </div>
   </div>
 </div>
-<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3 rounded">
-  <% for(let listing of allListings) { %>
-  <a href="/listings/<%= listing._id%>" class="listing-link">
-    <div class="card col listing-card shadow">
-      <img
-        src="<%=listing.image.url%>"
-        class="card-img-top rounded-bottom"
-        alt="listing_image"
-        style="height: 20rem"
-      />
-      <div class="card-img-overlay"></div>
-      <div class="card-body my-3">
-        <p class="card-text text-center">
-          <b><%= listing.title %></b><br />
-          &#8377;<%= listing.price.toLocaleString("en-IN") %>/night
-          <i class="tax-info"> &nbsp;+18% GST</i>
-        </p>
-      </div>
-    </div>
-  </a>
-  <% } %>
-</div>
+
+<% if (allListings.length) { %>
+  <p class="text-muted small mt-3 mb-0 result-count">
+    <%= allListings.length %> propert<%= allListings.length === 1 ? "y" : "ies" %> found
+  </p>
+  <div class="row row-cols-1 row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3 rounded">
+    <% for (let listing of allListings) { %>
+      <%- include("../includes/listing-card.ejs", { listing }) %>
+    <% } %>
+  </div>
+<% } else if (activeFilters.length) { %>
+  <div class="text-center border rounded-4 p-5 my-4 empty-results" role="status">
+    <h2 class="h4 mb-2">No properties match your search</h2>
+    <p class="text-muted mb-4">Try a different location, widen the price range, or clear your filters to see everything.</p>
+    <a href="/listings" class="btn add-btn">Clear Filters &amp; Explore All Properties</a>
+  </div>
+<% } else { %>
+  <div class="text-center border rounded-4 p-5 my-4 empty-listings" role="status">
+    <h2 class="h4 mb-2">No properties have been listed yet</h2>
+    <p class="text-muted mb-4">Be the first to list a property.</p>
+    <a href="/listings/new" class="btn add-btn">List Your Property</a>
+  </div>
+<% } %>
 
 <script>
   let taxSwitch = document.getElementById("flexSwitchCheckDefault");

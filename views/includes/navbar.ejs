@@ -38,10 +38,14 @@
         <a class="nav-link" href="/listings">ELITE ESTATES HUB</a>
       </div>
       <div class="navbar-nav ms-auto">
-        <form class="d-flex" role="search">
+        <form class="d-flex" role="search" action="/listings" method="get">
           <input
             class="form-control me-2 search-input "
             type="search"
+            name="q"
+            maxlength="100"
+            aria-label="Search destinations"
+            value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
             placeholder="Search destinations"
           />
           <button class="btn search-btn" type="submit">

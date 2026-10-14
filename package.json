@@ -8,6 +8,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
+    "seed:demo": "node init/seedDemo.js",
     "test": "node --test tests/"
   },
   "keywords": [],
