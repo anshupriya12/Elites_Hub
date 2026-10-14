@@ -37,6 +37,16 @@ To run the Elites Hub application locally, follow these steps:
 4. Start the development server: `npm start`
 5. Open your web browser and navigate to `http://localhost:8080`
 
+## Google sign-in (optional)
+
+Google login is enabled only when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set in `.env` (see `.env.example`).
+
+- In Google Cloud, create an OAuth client of type **Web application** and register the redirect URI
+  `http://localhost:8080/google/callback` (open the site as `localhost`, not `127.0.0.1`).
+- A new Google user gets an account created automatically. An existing username/password account is **not** linked
+  automatically by email; log in with your password first, then choose "Login with Google" to link it.
+- Run the automated tests with `npm test`.
+
 ## Contributing
 
 Contributions are welcome! If you'd like to contribute to the Elites Hub project, please follow these steps:

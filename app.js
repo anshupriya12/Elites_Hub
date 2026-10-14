@@ -20,6 +20,7 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const bookingRouter = require("./routes/booking.js");
+const googleRouter = require("./routes/google.js");
 const listingController = require("./controllers/listing.js");
 const compression = require('compression');
 
@@ -85,9 +86,7 @@ app.use(compression());
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
-
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+// Session serialization (user _id only) is configured in passport.js and shared by local and Google logins.
 
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
@@ -111,16 +110,11 @@ app.use(cacheController({
 }));
 
 app.get("/failed", (req, res) => {
-    res.render("errors");
+    res.render("errors", { message: "Sign-in failed. Please try again." });
 });
 
-app.get("/google", passport.authenticate("google", { scope: ['profile', 'email'] }));
-
-app.get("/google/callback", passport.authenticate("google", { failureRedirect: '/failed' }),
-    (req, res) => {
-        res.redirect("/success");
-    }
-);
+// /google and /google/callback (the redirect URI registered with Google)
+app.use("/", googleRouter);
 
 
 app.all("*", (req, res, next) => {
