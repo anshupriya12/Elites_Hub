@@ -89,6 +89,7 @@ app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   res.locals.currUser = req.user;
+  res.locals.currentPath = req.path; // lets the shared navbar mark the current section
   next();
 });
 
@@ -108,7 +109,7 @@ app.use(cacheController({
 }));
 
 app.get("/failed", (req, res) => {
-    res.render("errors", { message: "Sign-in failed. Please try again." });
+    res.status(400).render("errors", { status: 400, message: "Sign-in failed. Please try again.", pageTitle: "Sign-in failed" });
 });
 
 // /google and /google/callback (the redirect URI registered with Google)
@@ -121,7 +122,7 @@ app.all("*", (req, res, next) => {
 
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something went Wrong!" } = err;
-  res.status(statusCode).render("errors.ejs", { message });
+  res.status(statusCode).render("errors.ejs", { message, status: statusCode, pageTitle: statusCode === 404 ? "Page not found" : "Something went wrong" });
 });
 
 app.listen(8080, () => {

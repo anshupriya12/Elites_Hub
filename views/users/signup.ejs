@@ -1,59 +1,41 @@
 <% layout("/layouts/boilerplate") %>
 
-  <div class="container my-5">
-    <div class="row justify-content-center">
-      <div class="col-lg-6 col-md-8 col-sm-10 col-12 shadow py-5 px-4 rounded">
-        <h1 class="text-center mb-4">Signup</h1>
-        <form action="/signup" method="post" class="needs-validation" novalidate>
-          <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input name="username" id="username" type="text" class="form-control" required />
-            <div class="invalid-feedback">
-              Please enter a username.
-            </div>
-          </div>
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input name="email" id="email" type="email" class="form-control" required />
-            <div class="invalid-feedback">
-              Please enter a valid email.
-            </div>
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input name="password" id="password" type="password" class="form-control" required />
-            <div class="invalid-feedback">
-              Please enter a password.
-            </div>
-          </div>
-          <div class="d-flex flex-column flex-md-row justify-content-center">
-            <button type="submit" class="btn mx-2 mb-2 mb-md-0"
-              style="background-color: #1d3557; color: white; border-radius: 15px;">
-              SignUp
-            </button>
-            <a href="/google" class="google btn mx-2"
-              style="background-color: #1d3557; color: white; border-radius: 15px; padding: 8px 15px; font-size: 15px;">
-              <i class="fa-brands fa-google" style="color: #ffffff; margin-right: 10px;"></i>Google
-            </a>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+<%- include("../includes/breadcrumbs.ejs", { crumbs: [{ label: "Home", href: "/" }, { label: "Sign up" }] }) %>
 
-  <!-- Optional: Including Bootstrap's JS for validation handling -->
-  <script>
-    (function () {
-      'use strict';
-      var forms = document.querySelectorAll('.needs-validation');
-      Array.prototype.slice.call(forms).forEach(function (form) {
-        form.addEventListener('submit', function (event) {
-          if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-          form.classList.add('was-validated');
-        }, false);
-      });
-    })();
-  </script>
+<div class="form-page">
+  <div class="form-card">
+    <h1 class="h2">Create your account</h1>
+    <p class="lead-sm">Sign up to list properties, leave reviews and make bookings.</p>
+
+    <form action="/signup" method="post" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input name="username" id="username" type="text" class="form-control" autocomplete="username" required />
+        <div class="invalid-feedback">Please enter a username.</div>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input name="email" id="email" type="email" class="form-control" autocomplete="email" required />
+        <div class="invalid-feedback">Please enter a valid email address.</div>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input name="password" id="password" type="password" class="form-control" autocomplete="new-password" required />
+        <div class="invalid-feedback">Please enter a password.</div>
+      </div>
+      <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-eh btn-lg">Sign up</button>
+        <div class="divider-text" aria-hidden="true">or</div>
+        <a href="/google" class="btn btn-eh-outline btn-lg">
+          <i class="fa-brands fa-google" aria-hidden="true"></i> Continue with Google
+        </a>
+      </div>
+    </form>
+
+    <p class="mt-4 mb-0 text-center">
+      Already have an account? <a href="/login">Log in</a>
+      <span class="text-muted" aria-hidden="true"> &middot; </span>
+      <a href="/">Back to Home</a>
+    </p>
+  </div>
+</div>

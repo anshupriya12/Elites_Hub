@@ -1,26 +1,25 @@
 // Sample properties for demonstration: 10 cities x 5 properties = 50. They are fictional. They are NOT real
 // properties, NOT verified, NOT available for booking and NOT real offers. Every record is marked isDemo and carries a
 // stable demoKey so seeding can be repeated safely. Coordinates are approximate locality centres ([longitude, latitude]).
-// Images are original generated illustrations (see generateDemoImages.js), never scraped photos.
+// Images are licensed stock photographs chosen to suit each property type (see demoPhotos.js). They are illustrative
+// only and do not show these fictional properties; nothing is scraped from real-estate sites.
+const { urlFor } = require("./demoPhotos.js");
 const NOTICE = "SAMPLE LISTING for demonstration only - not a real property, not available for booking, and not an actual offer.";
 
-// sky top, sky bottom, ground colour for each city's illustrations
 const cities = [
-  { slug: "delhi", name: "Delhi", theme: ["#ffe0b5", "#f4a6a0", "#c9b79c"] },
-  { slug: "mumbai", name: "Mumbai", theme: ["#9fb7e8", "#f7d6e0", "#7f8fa6"] },
-  { slug: "kolkata", name: "Kolkata", theme: ["#f3d9b1", "#d6c4e8", "#bfa58a"] },
-  { slug: "bengaluru", name: "Bengaluru", theme: ["#c9e8ff", "#e9f7d4", "#9bd37a"] },
-  { slug: "chennai", name: "Chennai", theme: ["#ffd8a8", "#ffb3a7", "#d4a373"] },
-  { slug: "hyderabad", name: "Hyderabad", theme: ["#b5d6ff", "#e6e6fa", "#c8d5b9"] },
-  { slug: "ahmedabad", name: "Ahmedabad", theme: ["#ffe6a7", "#ffc9a0", "#d8c3a5"] },
-  { slug: "surat", name: "Surat", theme: ["#bfe9ff", "#fff1c9", "#a8d5ba"] },
-  { slug: "pune", name: "Pune", theme: ["#d0f4de", "#fcf6bd", "#a7c957"] },
-  { slug: "jaipur", name: "Jaipur", theme: ["#ffcfa8", "#ff9b8a", "#e7b98a"] },
+  { slug: "delhi", name: "Delhi" },
+  { slug: "mumbai", name: "Mumbai" },
+  { slug: "kolkata", name: "Kolkata" },
+  { slug: "bengaluru", name: "Bengaluru" },
+  { slug: "chennai", name: "Chennai" },
+  { slug: "hyderabad", name: "Hyderabad" },
+  { slug: "ahmedabad", name: "Ahmedabad" },
+  { slug: "surat", name: "Surat" },
+  { slug: "pune", name: "Pune" },
+  { slug: "jaipur", name: "Jaipur" },
 ];
 
-const ACCENTS = ["#e76f51", "#2a9d8f", "#7b2cbf", "#c1440e", "#1d3557"];
-
-// [illustration style, title, description, locality, price per night (INR), longitude, latitude]
+// [property kind, title, description, locality, price per night (INR), longitude, latitude]
 const rows = {
   delhi: [
     ["apartment", "Sunlit 2BHK Apartment near Connaught Place", "A bright two-bedroom apartment a short walk from the central market, with a modular kitchen and easy metro access.", "Connaught Place", 9500, 77.2167, 28.6315],
@@ -100,13 +99,12 @@ const pad = (n) => String(n).padStart(2, "0");
 const demoListings = [];
 for (let n = 0; n < 5; n++) {
   for (const city of cities) {
-    const [style, title, blurb, locality, price, lng, lat] = rows[city.slug][n];
+    const [kind, title, blurb, locality, price, lng, lat] = rows[city.slug][n];
     demoListings.push({
       slug: `${city.slug}-${pad(n + 1)}`,
       citySlug: city.slug,
       city: city.name,
-      style,
-      palette: [city.theme[0], city.theme[1], ACCENTS[n % ACCENTS.length], city.theme[2]],
+      kind,
       title: `${title} (Sample)`,
       blurb,
       location: `${locality}, ${city.name}`,
@@ -127,7 +125,7 @@ const buildDemoDocs = () =>
     price: d.price,
     location: d.location,
     country: "India",
-    image: { url: `/images/demo/${d.slug}.svg`, filename: `demo/${d.slug}` },
+    image: { url: urlFor(d.slug), filename: `demo/${d.slug}` },
     geometry: { type: "Point", coordinates: d.coordinates },
   }));
 

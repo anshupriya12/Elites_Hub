@@ -1,53 +1,64 @@
 <% layout("layouts/boilerplate") %>
 
-<section class="home-hero rounded-4 my-3 text-center text-white" aria-label="Welcome">
-  <div class="px-3">
-    <h1 class="display-5 fw-bold mb-3">Find your next stay with Elites Hub</h1>
-    <p class="lead mb-4">Browse properties across India, or list your own.</p>
+<section class="home-hero text-center" aria-labelledby="home-title">
+  <h1 id="home-title" class="mb-3">Find your next stay with Elites Hub</h1>
+  <p class="lead mb-4">Browse properties across India's major cities, or list your own.</p>
 
-    <form action="/listings" method="get" class="home-search mx-auto mb-4" role="search">
-      <div class="input-group">
-        <input
-          type="search"
-          name="q"
-          class="form-control"
-          placeholder="City or location"
-          aria-label="Search by city or location"
-          maxlength="100"
-        />
-        <button class="btn btn-dark" type="submit">Search</button>
-      </div>
-    </form>
-
-    <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
-      <a href="/listings" class="btn btn-lg add-btn shadow">Explore Properties</a>
-      <a href="/listings/new" class="btn btn-lg btn-outline-light shadow">List Your Property</a>
+  <form action="/listings" method="get" class="home-search mx-auto mb-4" role="search">
+    <label class="visually-hidden" for="home-q">Search by city or location</label>
+    <div class="input-group">
+      <input
+        id="home-q"
+        type="search"
+        name="q"
+        class="form-control"
+        placeholder="City or location"
+        maxlength="100"
+      />
+      <button class="btn" type="submit">Search</button>
     </div>
+  </form>
+
+  <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+    <a href="/listings" class="btn btn-lg btn-on-dark">Explore Properties</a>
+    <a href="/listings/new" class="btn btn-lg btn-outline-on-dark">List Your Property</a>
   </div>
 </section>
 
-<section class="my-5" aria-labelledby="featured-heading">
-  <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-2">
-    <h2 id="featured-heading" class="h3 mb-0">Featured Properties</h2>
+<section class="mb-4" aria-labelledby="cities-heading">
+  <h2 id="cities-heading" class="h5 mb-2">Browse by city</h2>
+  <div class="chip-row">
+    <% popularCities.forEach(function (c) { %>
+      <a class="chip" href="<%= c.url %>"><%= c.name %></a>
+    <% }) %>
+  </div>
+</section>
+
+<section class="mt-4" aria-labelledby="featured-heading">
+  <div class="section-title">
+    <h2 id="featured-heading">Featured Properties</h2>
     <a href="/listings">View all properties &rarr;</a>
   </div>
 
   <% if (featured.length) { %>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 mt-3 rounded" id="featured-properties">
+    <div class="property-grid" id="featured-properties">
       <% for (const listing of featured) { %>
-        <%- include("includes/listing-card.ejs", { listing }) %>
+        <%- include("includes/listing-card.ejs", { listing, photo }) %>
       <% } %>
     </div>
     <% if (featured.some((l) => l.isDemo)) { %>
-      <p class="text-muted small" id="sample-note">
+      <p class="text-muted small mt-3" id="sample-note">
         Listings marked &ldquo;Sample listing&rdquo; are illustrations for demonstration only. They are not real
-        properties, are not available for booking, and are not actual offers.
+        properties, are not available for booking, and are not actual offers. Their photographs are illustrative stock
+        images.
       </p>
     <% } %>
   <% } else { %>
-    <div class="text-center border rounded-4 p-5 mt-3" id="featured-empty">
-      <p class="lead mb-3">No properties have been listed yet.</p>
-      <a href="/listings/new" class="btn add-btn">List Your Property</a>
+    <div class="empty-state" id="featured-empty">
+      <span class="empty-icon" aria-hidden="true"><i class="fa-solid fa-house"></i></span>
+      <h3 class="h5">No properties have been listed yet.</h3>
+      <p>Be the first to add a property.</p>
+      <a href="/listings/new" class="btn btn-eh">List Your Property</a>
     </div>
   <% } %>
 </section>

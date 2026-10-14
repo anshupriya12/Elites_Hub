@@ -1,54 +1,36 @@
 <% layout("/layouts/boilerplate") %>
 
-  <div class="container my-5">
-    <div class="row justify-content-center">
-      <div class="col-lg-6 col-md-8 col-sm-10 col-12 shadow py-5 px-4 rounded">
-        <h1 class="text-center mb-4">Login</h1>
-        <form action="/login" method="post" class="needs-validation" novalidate>
-          <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input name="username" id="username" type="text" class="form-control" required />
-            <div class="invalid-feedback">
-              Please enter your username.
-            </div>
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input name="password" id="password" type="password" class="form-control" required />
-            <div class="invalid-feedback">
-              Please enter your password.
-            </div>
-          </div>
-          <div class="d-flex flex-column flex-md-row justify-content-center align-items-center">
-            <div class="mb-3">
-              <button class="btn btn-primary mx-2" style="background-color: #1d3557; border-radius: 15px;">
-                Login
-              </button>
-            </div>
-            <div class="mb-3">
-              <a href="/google" class="btn btn-primary" style="background-color: #1d3557; border-radius: 15px;">
-                <i class="fa-brands fa-google" style="color: #ffffff; margin-right: 10px;"></i>Login with Google
-              </a>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+<%- include("../includes/breadcrumbs.ejs", { crumbs: [{ label: "Home", href: "/" }, { label: "Log in" }] }) %>
 
-  <!-- Optional: Including Bootstrap's JS for validation handling -->
-  <script>
-    (function () {
-      'use strict';
-      var forms = document.querySelectorAll('.needs-validation');
-      Array.prototype.slice.call(forms).forEach(function (form) {
-        form.addEventListener('submit', function (event) {
-          if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-          form.classList.add('was-validated');
-        }, false);
-      });
-    })();
-  </script>
+<div class="form-page">
+  <div class="form-card">
+    <h1 class="h2">Log in</h1>
+    <p class="lead-sm">Welcome back. Log in to list properties, leave reviews and make bookings.</p>
+
+    <form action="/login" method="post" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input name="username" id="username" type="text" class="form-control" autocomplete="username" required />
+        <div class="invalid-feedback">Please enter your username.</div>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input name="password" id="password" type="password" class="form-control" autocomplete="current-password" required />
+        <div class="invalid-feedback">Please enter your password.</div>
+      </div>
+      <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-eh btn-lg">Log in</button>
+        <div class="divider-text" aria-hidden="true">or</div>
+        <a href="/google" class="btn btn-eh-outline btn-lg">
+          <i class="fa-brands fa-google" aria-hidden="true"></i> Login with Google
+        </a>
+      </div>
+    </form>
+
+    <p class="mt-4 mb-0 text-center">
+      New to Elites Hub? <a href="/signup">Create an account</a>
+      <span class="text-muted" aria-hidden="true"> &middot; </span>
+      <a href="/">Back to Home</a>
+    </p>
+  </div>
+</div>

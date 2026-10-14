@@ -1,10 +1,18 @@
 <% layout("/layouts/boilerplate")%>
-
-<div class="row mt-3">
-  <div class="alert alert-danger col-6 offset-3" role="alert">
-    <!-- <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Danger:">
-      <use xlink:href="#exclamation-triangle-fill" />
-    </svg> -->
-    <p class="alert-heading"><%= message %></p>
+<%
+  const code = typeof status !== "undefined" ? Number(status) : 500;
+  const heading =
+    code === 404 ? "Page not found" :
+    code === 403 ? "You don't have access to that" :
+    code >= 500 ? "Something went wrong" :
+    "We couldn't complete that request";
+%>
+<section class="error-page" aria-labelledby="error-title">
+  <p class="error-code" aria-hidden="true"><%= code %></p>
+  <h1 id="error-title" class="h3 mb-2"><%= heading %></h1>
+  <p class="text-muted mb-0" role="alert"><%= message %></p>
+  <div class="d-flex flex-column flex-sm-row justify-content-center gap-2 mt-4">
+    <a href="/" class="btn btn-eh">Back to Home</a>
+    <a href="/listings" class="btn btn-eh-outline">Browse Properties</a>
   </div>
-</div>
+</section>

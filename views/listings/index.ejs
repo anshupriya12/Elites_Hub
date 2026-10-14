@@ -1,198 +1,99 @@
 <% layout("layouts/boilerplate") %>
 
-<style>
-  #filters {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .filter {
-    text-align: center;
-    margin-right: 2rem;
-    margin-top: 2rem;
-    opacity: 0.7;
-  }
-  .filter:hover {
-    opacity: 1;
-    cursor: pointer;
-  }
-  .filter p {
-    font-size: 0.8rem;
-  }
-  .tax-info {
-    display: none;
-  }
-  .tax-toggle {
-    border: 1px solid black;
-    border-radius: 1rem;
-    height: 3rem;
-    padding: 1rem;
-    margin-left: 2rem;
-    display: flex;
-    align-items: center;
-  }
-</style>
+<%- include("../includes/breadcrumbs.ejs", { crumbs: [{ label: "Home", href: "/" }, { label: "Properties" }] }) %>
 
-<form action="/listings" method="get" class="filter-bar card card-body shadow-sm my-3" role="search" aria-label="Search and filter properties">
-  <div class="row g-2 align-items-end">
+<div class="page-header">
+  <h1>Properties</h1>
+  <p>Search by city and price. Listings marked &ldquo;Sample listing&rdquo; are fictional examples.</p>
+</div>
+
+<form action="/listings" method="get" class="search-panel" role="search" aria-label="Search and filter properties" data-loading-form>
+  <div class="row g-3 align-items-end">
     <div class="col-12 col-md-5">
-      <label for="q" class="form-label small mb-1">City or location</label>
-      <input id="q" name="q" type="search" class="form-control" maxlength="100" placeholder="e.g. Goa, Jaipur" value="<%= filters.q %>" />
+      <label for="q" class="form-label">City or location</label>
+      <input id="q" name="q" type="search" class="form-control" maxlength="100" placeholder="e.g. Bengaluru, Jaipur" value="<%= filters.q %>" />
     </div>
     <div class="col-6 col-md-2">
-      <label for="minPrice" class="form-label small mb-1">Min price (&#8377;)</label>
-      <input id="minPrice" name="minPrice" type="number" min="0" step="any" class="form-control" value="<%= filters.minPrice %>" />
+      <label for="minPrice" class="form-label">Min price (&#8377;)</label>
+      <input id="minPrice" name="minPrice" type="number" min="0" step="any" inputmode="numeric" class="form-control" value="<%= filters.minPrice %>" />
     </div>
     <div class="col-6 col-md-2">
-      <label for="maxPrice" class="form-label small mb-1">Max price (&#8377;)</label>
-      <input id="maxPrice" name="maxPrice" type="number" min="0" step="any" class="form-control" value="<%= filters.maxPrice %>" />
+      <label for="maxPrice" class="form-label">Max price (&#8377;)</label>
+      <input id="maxPrice" name="maxPrice" type="number" min="0" step="any" inputmode="numeric" class="form-control" value="<%= filters.maxPrice %>" />
     </div>
     <div class="col-12 col-md-3 d-grid">
-      <button class="btn add-btn" type="submit">Search</button>
+      <button class="btn btn-eh" type="submit" data-loading-text="Searching&hellip;">Search</button>
     </div>
   </div>
 </form>
 
-<div class="popular-cities d-flex flex-wrap align-items-center gap-2 mb-2" aria-label="Popular cities">
+<div class="popular-cities chip-row mt-3" aria-label="Popular cities">
   <span class="small text-muted">Popular cities:</span>
   <% popularCities.forEach(function (c) { %>
-    <a class="badge rounded-pill text-bg-light border text-decoration-none" href="/listings?q=<%= encodeURIComponent(c) %>"><%= c %></a>
+    <a class="chip" href="<%= c.url %>"><%= c.name %></a>
   <% }) %>
 </div>
 
 <% if (searchCity) { %>
-  <p class="small text-muted mb-2 search-note">Showing results for <b><%= searchCity %></b></p>
+  <p class="small text-muted mt-3 mb-0 search-note">Showing results for <b><%= searchCity %></b></p>
 <% } %>
 
-<% notices.forEach(function (notice) { %>
-  <div class="alert alert-warning py-2 notice" role="alert"><%= notice %></div>
-<% }) %>
+<div class="filter-notices mt-3">
+  <% notices.forEach(function (notice) { %>
+    <div class="alert alert-warning py-2 notice" role="alert"><%= notice %></div>
+  <% }) %>
+</div>
 
 <% if (activeFilters.length) { %>
-  <div class="active-filters d-flex flex-wrap align-items-center gap-2 mb-2" aria-label="Active filters">
+  <div class="active-filters chip-row mt-3" aria-label="Active filters">
     <span class="small text-muted">Active filters:</span>
     <% activeFilters.forEach(function (f) { %>
-      <a class="badge rounded-pill text-bg-secondary text-decoration-none" href="<%= f.removeUrl %>" title="Remove this filter"><%= f.label %> &times;</a>
+      <a class="chip chip-active" href="<%= f.removeUrl %>" title="Remove this filter"><%= f.label %> &times;</a>
     <% }) %>
     <a href="/listings" class="small clear-filters">Clear Filters</a>
   </div>
 <% } %>
 
-<div id="filters" class="d-none d-md-flex justify-content-center align-items-center">
-  <div class="filter">
-    <div>
-      <i class="fa-solid fa-fire"></i>
-    </div>
-    <p>Trending</p>
-  </div>
-  <div class="filter">
-    <div>
-      <i class="fa-solid fa-bed"></i>
-    </div>
-    <p>Rooms</p>
-  </div>
-  <div class="filter">
-    <div>
-      <i class="fa-solid fa-mountain-city"></i>
-    </div>
-    <p>Iconic cities</p>
-  </div>
-  <div class="filter">
-    <div>
-      <i class="fa-solid fa-mountain"></i>
-    </div>
-    <p>Mountains</p>
-  </div>
-  <div class="filter">
-    <div>
-      <i class="fa-brands fa-fort-awesome"></i>
-    </div>
-    <p>Castles</p>
-  </div>
-  <div class="filter">
-    <div>
-      <i class="fa-solid fa-person-swimming"></i>
-    </div>
-    <p>Pool</p>
-  </div>
-  <div class="filter">
-    <div>
-      <i class="fa-solid fa-campground"></i>
-    </div>
-    <p>Camping</p>
-  </div>
-  <div class="filter">
-    <div>
-      <i class="fa-solid fa-cow"></i>
-    </div>
-    <p>Farms</p>
-  </div>
-  <div class="filter">
-    <div>
-      <i class="fa-regular fa-snowflake"></i>
-    </div>
-    <p>Arctic</p>
-  </div>
-  <div class="filter">
-    <div>
-      <i class="fa-solid fa-igloo"></i>
-    </div>
-    <p>Domes</p>
-  </div>
-  <div class="filter">
-    <div>
-      <i class="fa-solid fa-sailboat"></i>
-    </div>
-    <p>Boats</p>
-  </div>
-  <div class="tax-toggle shadow border">
-    <div class="form-check-reverse form-switch">
-      <input
-        class="form-check-input"
-        type="checkbox"
-        role="switch"
-        id="flexSwitchCheckDefault"
-      />
-      <label class="form-check-label" for="flexSwitchCheckDefault"
-        >Display prices post taxes</label
-      >
-    </div>
-  </div>
-</div>
-
 <% if (allListings.length) { %>
-  <p class="text-muted small mt-3 mb-0 result-count">
-    <%= allListings.length %> propert<%= allListings.length === 1 ? "y" : "ies" %> found
-  </p>
-  <div class="row row-cols-1 row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3 rounded">
+  <div class="results-bar">
+    <p class="result-count" role="status">
+      <%= allListings.length %> propert<%= allListings.length === 1 ? "y" : "ies" %> found
+    </p>
+    <div class="form-check form-switch tax-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
+      <label class="form-check-label" for="flexSwitchCheckDefault">Show prices including GST</label>
+    </div>
+  </div>
+  <div class="property-grid">
     <% for (let listing of allListings) { %>
-      <%- include("../includes/listing-card.ejs", { listing }) %>
+      <%- include("../includes/listing-card.ejs", { listing, photo }) %>
     <% } %>
   </div>
 <% } else if (activeFilters.length) { %>
-  <div class="text-center border rounded-4 p-5 my-4 empty-results" role="status">
-    <h2 class="h4 mb-2">No properties match your search</h2>
-    <p class="text-muted mb-4">Try a different location, widen the price range, or clear your filters to see everything.</p>
-    <a href="/listings" class="btn add-btn">Clear Filters &amp; Explore All Properties</a>
+  <div class="empty-state empty-results" role="status">
+    <span class="empty-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
+    <h2 class="h4">No properties match your search</h2>
+    <p>Try a different location, widen the price range, or clear your filters to see everything.</p>
+    <a href="/listings" class="btn btn-eh">Clear Filters &amp; Explore All Properties</a>
   </div>
 <% } else { %>
-  <div class="text-center border rounded-4 p-5 my-4 empty-listings" role="status">
-    <h2 class="h4 mb-2">No properties have been listed yet</h2>
-    <p class="text-muted mb-4">Be the first to list a property.</p>
-    <a href="/listings/new" class="btn add-btn">List Your Property</a>
+  <div class="empty-state empty-listings" role="status">
+    <span class="empty-icon" aria-hidden="true"><i class="fa-solid fa-house"></i></span>
+    <h2 class="h4">No properties have been listed yet</h2>
+    <p>Be the first to list a property.</p>
+    <a href="/listings/new" class="btn btn-eh">List Your Property</a>
   </div>
 <% } %>
 
 <script>
-  let taxSwitch = document.getElementById("flexSwitchCheckDefault");
-  taxSwitch.addEventListener("click", () => {
-    let taxInfo = document.getElementsByClassName("tax-info");
-    for (info of taxInfo) {
-      if (info.style.display != "inline") {
-        info.style.display = "inline";
-      } else {
-        info.style.display = "none";
+  (function () {
+    var taxSwitch = document.getElementById("flexSwitchCheckDefault");
+    if (!taxSwitch) return;
+    taxSwitch.addEventListener("change", function () {
+      var infos = document.getElementsByClassName("tax-info");
+      for (var i = 0; i < infos.length; i++) {
+        infos[i].style.display = taxSwitch.checked ? "inline" : "none";
       }
-    }
-  });
+    });
+  })();
 </script>

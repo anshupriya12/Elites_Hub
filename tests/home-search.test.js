@@ -64,7 +64,7 @@ test.beforeEach(() => { db.clear(); state.queries = []; });
 
 const get = async (url) => { const r = await fetch(base + url); return { status: r.status, text: await r.text() }; };
 const cards = (html) => (html.match(/class="listing-link"/g) || []).length;
-const titlesInOrder = (html) => [...html.matchAll(/<b>([^<]*)<\/b><br \/>/g)].map((m) => m[1]);
+const titlesInOrder = (html) => [...html.matchAll(/<h3 class="property-card__title">([^<]*)<\/h3>/g)].map((m) => m[1]);
 
 // ---------------- homepage ----------------
 test("homepage: hero with Explore Properties and List Your Property buttons and a search box", async () => {
@@ -84,7 +84,7 @@ test("homepage: shows at most 6 featured cards, newest first, each with image, t
   const r = await get("/");
   assert.equal(cards(r.text), 6);
   assert.deepEqual(titlesInOrder(r.text), ["Villa 8", "Villa 7", "Villa 6", "Villa 5", "Villa 4", "Villa 3"]);
-  assert.ok(r.text.includes("City 8") && r.text.includes("&#8377;8,000/night"));
+  assert.ok(r.text.includes("City 8") && r.text.includes("&#8377;8,000</strong>"));
   assert.ok(r.text.includes(`href="/listings/${made[7]._id}"`));
   assert.match(r.text, /<img\s+src="\/images\/demo\/x\.svg"/);
 });
@@ -92,10 +92,10 @@ test("homepage: shows at most 6 featured cards, newest first, each with image, t
 test("homepage: sample listings are badged and explained; real listings are not", async () => {
   add({ title: "Real Home" });
   let r = await get("/");
-  assert.ok(!r.text.includes("Sample listing") && !r.text.includes("sample-note"));
+  assert.ok(!r.text.includes('class="sample-badge"') && !r.text.includes("sample-note"));
   add({ title: "Demo (Sample)", isDemo: true });
   r = await get("/");
-  assert.match(r.text, /class="badge bg-warning text-dark sample-badge">Sample listing</);
+  assert.match(r.text, /class="sample-badge">Sample listing</);
   assert.match(r.text, /id="sample-note"/);
   assert.match(r.text, /not\s+real\s+properties, are not available for booking, and are not actual offers/);
   assert.equal((r.text.match(/sample-badge/g) || []).length, 1, "only the demo card is badged");
@@ -112,9 +112,9 @@ test("homepage: with no properties it shows a friendly empty state, not a blank 
 test("homepage is responsive: viewport meta, stacked buttons on phones, 1/2/3 column grid, mobile CSS", async () => {
   add();
   const r = await get("/");
-  assert.match(r.text, /<meta name="viewport" content="width=device-width, initial-scale=1.0">/);
+  assert.match(r.text, /<meta name="viewport" content="width=device-width, initial-scale=1" \/>/);
   assert.match(r.text, /flex-column flex-sm-row/);
-  assert.match(r.text, /row-cols-1 row-cols-md-2 row-cols-lg-3/);
+  assert.match(r.text, /class="property-grid"/);
   const css = fs.readFileSync(path.join(ROOT, "public", "css", "style.css"), "utf8");
   assert.match(css, /@media \(max-width: 575\.98px\)[\s\S]*\.home-hero/);
   assert.match(css, /\.tax-info\s*\{\s*display:\s*none/);
@@ -126,7 +126,7 @@ test("homepage: a listing without an image and a hostile title render safely", a
   assert.equal(r.status, 200);
   assert.ok(!r.text.includes("<script>alert(1)</script>"));
   assert.ok(r.text.includes("&lt;script&gt;alert(1)&lt;/script&gt;"));
-  assert.match(r.text, />No image</);
+  assert.match(r.text, /src="\/images\/placeholder-property\.svg"/);
 });
 
 // ---------------- search and price filters ----------------
@@ -246,12 +246,12 @@ test("the filter form keeps the current values and escapes them", async () => {
 test("the navbar search box now submits to /listings and shows the current search", async () => {
   seedSearch();
   let r = await get("/listings");
-  assert.match(r.text, /<form class="d-flex" role="search" action="\/listings" method="get">/);
+  assert.match(r.text, /<form class="d-flex navbar-search ms-lg-auto" role="search" action="\/listings" method="get">/);
   assert.match(r.text, /<input[^>]*name="q"[^>]*value=""/);
   r = await get("/listings?q=jaipur");
-  assert.match(r.text, /class="form-control me-2 search-input "[\s\S]*?value="jaipur"/);
+  assert.match(r.text, /id="nav-q"[\s\S]*?value="jaipur"/);
   r = await get("/");
-  assert.match(r.text, /<form class="d-flex" role="search" action="\/listings" method="get">/);
+  assert.match(r.text, /<form class="d-flex navbar-search ms-lg-auto" role="search" action="\/listings" method="get">/);
 });
 
 // ---------------- empty states ----------------
@@ -262,7 +262,7 @@ test("no matches: helpful message, a clear way to reset, and the filter form is 
   assert.equal(cards(r.text), 0);
   assert.match(r.text, /No properties match your search/);
   assert.match(r.text, /Try a different location, widen the price range, or clear your filters/);
-  assert.match(r.text, /<a href="\/listings" class="btn add-btn">Clear Filters &amp; Explore All Properties<\/a>/);
+  assert.match(r.text, /<a href="\/listings" class="btn btn-eh">Clear Filters &amp; Explore All Properties<\/a>/);
   assert.match(r.text, /<input id="q"/);
 });
 
@@ -270,7 +270,7 @@ test("no properties at all: invites the visitor to list one (not a blank page)",
   const r = await get("/listings");
   assert.equal(r.status, 200);
   assert.match(r.text, /No properties have been listed yet/);
-  assert.match(r.text, /<a href="\/listings\/new" class="btn add-btn">List Your Property<\/a>/);
+  assert.match(r.text, /<a href="\/listings\/new" class="btn btn-eh">List Your Property<\/a>/);
 });
 
 test("result count wording", async () => {

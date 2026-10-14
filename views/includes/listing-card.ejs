@@ -1,27 +1,33 @@
-<a href="/listings/<%= listing._id %>" class="listing-link">
-  <div class="card col listing-card shadow">
-    <% if (listing.image && listing.image.url) { %>
+<%# Expects: listing, and photo (the resolvePropertyImage helper passed down by the controller). %>
+<% const img = photo(listing); %>
+<article class="property-card">
+  <a href="/listings/<%= listing._id %>" class="listing-link" aria-label="View property: <%= listing.title %>, <%= listing.location %>">
+    <div class="property-card__media is-loading-img">
       <img
-        src="<%= listing.image.url %>"
-        class="card-img-top rounded-bottom"
-        alt="<%= listing.title %>"
-        style="aspect-ratio: 4 / 3; height: auto"
+        src="<%= img.src %>"
+        alt="<%= img.alt %>"
+        width="900"
+        height="675"
         loading="lazy"
+        decoding="async"
+        onload="this.parentNode.classList.remove('is-loading-img')"
+        onerror="this.onerror=null;this.src='/images/placeholder-property.svg';this.parentNode.classList.remove('is-loading-img')"
       />
-    <% } else { %>
-      <div class="card-img-top rounded-bottom bg-light d-flex align-items-center justify-content-center text-muted" style="aspect-ratio: 4 / 3">No image</div>
-    <% } %>
-    <% if (listing.isDemo) { %>
-      <span class="badge bg-warning text-dark sample-badge">Sample listing</span>
-    <% } %>
-    <div class="card-img-overlay"></div>
-    <div class="card-body my-3">
-      <p class="card-text text-center">
-        <b><%= listing.title %></b><br />
-        <span class="text-muted"><%= listing.location %></span><br />
-        &#8377;<%= (Number(listing.price) || 0).toLocaleString("en-IN") %>/night
-        <i class="tax-info"> &nbsp;+18% GST</i>
-      </p>
+      <% if (listing.isDemo) { %>
+        <span class="sample-badge">Sample listing</span>
+      <% } %>
     </div>
-  </div>
-</a>
+    <div class="property-card__body">
+      <h3 class="property-card__title"><%= listing.title %></h3>
+      <p class="property-card__location">
+        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+        <span class="visually-hidden">Location: </span><%= listing.location %>
+      </p>
+      <p class="property-card__price">
+        <strong>&#8377;<%= (Number(listing.price) || 0).toLocaleString("en-IN") %></strong>
+        <span>/night<i class="tax-info"> &nbsp;+18% GST</i></span>
+      </p>
+      <span class="property-card__cta">View Property <span class="cta-arrow" aria-hidden="true">&rarr;</span></span>
+    </div>
+  </a>
+</article>

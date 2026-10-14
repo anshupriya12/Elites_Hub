@@ -1,51 +1,66 @@
 <% layout("/layouts/boilerplate") %>
-<div class="row my-3 ">
-  <div class="col-8 offset-2 shadow px-5 pb-5">
-    <br /><br />
-    <h3 class="text-center">Create a New Listing</h3>
+
+<%- include("../includes/breadcrumbs.ejs", { crumbs: [{ label: "Home", href: "/" }, { label: "Properties", href: "/listings" }, { label: "List your property" }] }) %>
+
+<div class="form-page-wide">
+  <div class="form-card">
+    <h1 class="h2">Create a New Listing</h1>
+    <p class="lead-sm">Add a few details and a photo. Fields marked with * are required.</p>
+
     <form
       method="POST"
       action="/listings"
       novalidate
       class="needs-validation"
       enctype="multipart/form-data"
+      data-loading-form
     >
       <div class="mb-3">
-        <label for="title" class="form-label">Title</label>
+        <label for="title" class="form-label">Title *</label>
         <input
+          id="title"
           name="listing[title]"
           placeholder="Add a title"
           type="text"
           class="form-control"
+          maxlength="100"
           required
         />
-        <div class="invalid-feedback">Enter Title</div>
+        <div class="invalid-feedback">Enter a title.</div>
       </div>
       <div class="mb-3">
-        <label for="description" class="form-label">Description</label>
+        <label for="description" class="form-label">Description *</label>
         <textarea
+          id="description"
           name="listing[description]"
           class="form-control"
+          rows="4"
+          maxlength="2000"
           required
         ></textarea>
-        <div class="invalid-feedback">Enter Description</div>
+        <div class="invalid-feedback">Enter a description.</div>
       </div>
 
       <div class="mb-3">
-        <label for="image" class="form-label">Upload Image </label>
+        <label for="image" class="form-label">Photo *</label>
         <input
+          id="image"
           name="listing[image]"
           type="file"
           accept="image/png,image/jpeg,image/webp"
           class="form-control"
+          aria-describedby="image-help"
           required
         />
+        <div id="image-help" class="form-text">PNG, JPG or WebP, up to 5 MB.</div>
+        <div class="invalid-feedback">Choose a photo.</div>
       </div>
 
       <div class="row">
         <div class="mb-3 col-md-4">
-          <label for="price" class="form-label">Price</label>
+          <label for="price" class="form-label">Price per night (&#8377;) *</label>
           <input
+            id="price"
             name="listing[price]"
             placeholder="1000"
             type="number"
@@ -55,32 +70,39 @@
             class="form-control"
             required
           />
-          <div class="invalid-feedback">Enter valid price</div>
+          <div class="invalid-feedback">Enter a valid price.</div>
         </div>
         <div class="mb-3 col-md-8">
-          <label for="country" class="form-label">Country</label>
+          <label for="country" class="form-label">Country *</label>
           <input
+            id="country"
             name="listing[country]"
             placeholder="India"
             type="text"
             class="form-control"
+            maxlength="60"
             required
           />
-          <div class="invalid-feedback">Enter Country</div>
+          <div class="invalid-feedback">Enter a country.</div>
         </div>
       </div>
-      <div class="mb-3">
-        <label for="location" class="form-label">Location</label>
+      <div class="mb-4">
+        <label for="location" class="form-label">Location *</label>
         <input
+          id="location"
           name="listing[location]"
-          placeholder="Enter City and State"
+          placeholder="Enter city and state"
           type="text"
           class="form-control"
+          maxlength="100"
           required
         />
-        <div class="invalid-feedback">Enter Location</div>
+        <div class="invalid-feedback">Enter a location.</div>
       </div>
-      <button class="btn btn-dark add-btn mt-3 shadow">Add</button>
+      <div class="d-flex flex-wrap gap-2">
+        <button type="submit" class="btn btn-eh btn-lg" data-loading-text="Adding&hellip;">Add listing</button>
+        <a href="/listings" class="btn btn-eh-outline btn-lg">Cancel</a>
+      </div>
     </form>
   </div>
 </div>

@@ -61,6 +61,11 @@ $env:ALLOW_DEMO_SEED = "true"; npm run seed:demo -- --dry-run
 $env:ALLOW_DEMO_SEED = "true"; npm run seed:demo
 ```
 
+The sample properties use licensed stock photographs (Unsplash) stored in `public/images/properties/`, matched to each
+property type. They are illustrative only. Credits: `init/PHOTO_CREDITS.md`; manifest: `init/demoPhotos.js`. Sample
+records already in a database that still point at the old illustrations are shown with the matching photograph
+automatically, so no database change is needed.
+
 Search understands common city spellings (for example Bangalore/Bengaluru, Bombay/Mumbai) through an explicit alias
 list in `utils/cityAliases.js`; there is no fuzzy matching.
 

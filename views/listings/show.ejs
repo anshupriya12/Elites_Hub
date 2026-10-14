@@ -1,73 +1,106 @@
 <% layout("layouts/boilerplate") %>
-  <script>
-    const mapToken = "<%= process.env.MAP_TOKEN %>";
-    // Only the fields map.js needs; "<", ">", "&" and line separators are escaped so the JSON cannot close the script tag.
-    const listing = <%- JSON.stringify({ title: listing.title, geometry: listing.geometry })
-      .replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026")
-      .replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029") %>;
-  </script>
+<% const img = photo(listing); const isOwnerView = Boolean(currUser && listing.owner && listing.owner._id.equals(currUser._id)); %>
+<script>
+  const mapToken = "<%= process.env.MAP_TOKEN %>";
+  // Only the fields map.js needs; "<", ">", "&" and line separators are escaped so the JSON cannot close the script tag.
+  const listing = <%- JSON.stringify({ title: listing.title, geometry: listing.geometry, isDemo: Boolean(listing.isDemo) })
+    .replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029") %>;
+</script>
 
-  <div class="row mt-3">
-    <div class="col-12 mt-2">
-      <a href="/listings" class="btn btn-outline-dark btn-sm back-link">&larr; Back to Listings</a>
-    </div>
-    <div class="col-12 my-3 text-center font-weight-bold">
-      <h1>
-        <%= listing.title %>
-      </h1>
-    </div>
+<%- include("../includes/breadcrumbs.ejs", { crumbs: [{ label: "Home", href: "/" }, { label: "Properties", href: "/listings" }, { label: listing.title }] }) %>
 
-    <div class="card col-lg-6 col-md-10 col-sm-12 mx-auto listing-card mb-4">
-      <% if (listing.image && listing.image.url) { %>
-        <img src="<%= listing.image.url %>" class="card-img-top show-img img-fluid" alt="<%= listing.title %>" />
-      <% } %>
-      <div class="card-body">
-        <% if (listing.isDemo) { %>
-          <div class="alert alert-warning mt-3 mb-0 sample-notice" role="note">
-            <b>Sample listing.</b> This is an illustration for demonstration only. It is not a real property, is not
-            available for booking, and is not an actual offer.
-          </div>
-        <% } %>
-        <h4 class="card-text text-center mt-3">
-          Owner-
-          <b>
-            <%= listing.owner ? listing.owner.username : (listing.isDemo ? "Elites Hub (sample listing)" : "Owner unavailable") %>
-          </b>
-        </h4>
-        <p class="card-text text-left">"<%= listing.description %>"</p>
-        <p class="card-text text-left">
-          &#8377; <%= listing.price.toLocaleString("en-IN") %>
-        </p>
-        <p class="card-text text-left">
-          <%= listing.location %>
-        </p>
-        <p class="card-text text-left">
-          <%= listing.country %>
-        </p>
+<p class="mb-3">
+  <a href="/listings" class="btn btn-sm btn-eh-outline back-link">&larr; Back to Listings</a>
+</p>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <figure class="property-hero is-loading-img">
+      <img
+        src="<%= img.src %>"
+        alt="<%= img.alt %>"
+        width="900"
+        height="675"
+        decoding="async"
+        onload="this.parentNode.classList.remove('is-loading-img')"
+        onerror="this.onerror=null;this.src='/images/placeholder-property.svg';this.parentNode.classList.remove('is-loading-img')"
+      />
+      <% if (listing.isDemo) { %><span class="sample-badge">Sample listing</span><% } %>
+    </figure>
+    <% if (img.illustrative && img.credit) { %>
+      <p class="photo-credit">Illustrative stock photo by <%= img.credit %> on Unsplash. It does not show the actual property.</p>
+    <% } %>
+
+    <h1 class="mb-1"><%= listing.title %></h1>
+    <p class="property-location">
+      <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+      <%= listing.location %>, <%= listing.country %>
+    </p>
+
+    <% if (listing.isDemo) { %>
+      <div class="sample-notice" role="note">
+        <b>Sample listing.</b> This is an illustration for demonstration only. It is not a real property, is not
+        available for booking, and is not an actual offer.
       </div>
-    </div>
+    <% } %>
 
-    <div class="col-12 d-flex justify-content-center mb-4">
-      <% if(currUser && listing.owner && listing.owner._id.equals(currUser._id)) { %>
-        <div class="btn-group" role="group">
-          <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark mx-2 edit-btn">Edit</a>
-          <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" class="d-inline">
-            <button class="btn btn-dark">Delete</button>
+    <h2 class="h5 mt-4">About this property</h2>
+    <p class="mb-0"><%= listing.description %></p>
+
+    <dl class="property-facts">
+      <div><dt>Location</dt><dd><%= listing.location %></dd></div>
+      <div><dt>Country</dt><dd><%= listing.country %></dd></div>
+      <div><dt>Price per night</dt><dd>&#8377; <%= (Number(listing.price) || 0).toLocaleString("en-IN") %></dd></div>
+      <div>
+        <dt>Owner</dt>
+        <dd>
+          <% if (listing.owner) { %>
+            <b><%= listing.owner.username %></b>
+          <% } else if (listing.isDemo) { %>
+            Elites Hub (sample listing)
+          <% } else { %>
+            Owner unavailable
+          <% } %>
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  <aside class="col-lg-4" aria-label="Pricing and actions">
+    <div class="booking-card sticky-lg-top sticky-offset">
+      <p class="price">&#8377; <%= (Number(listing.price) || 0).toLocaleString("en-IN") %> <small>/ night</small></p>
+      <% if (isOwnerView) { %>
+        <p class="text-muted small mt-2">This is your listing.</p>
+        <div class="d-grid gap-2 mt-3">
+          <a href="/listings/<%= listing._id %>/edit" class="btn btn-eh">Edit</a>
+          <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" class="d-grid"
+            onsubmit="return confirm('Delete this listing? This cannot be undone.')">
+            <button type="submit" class="btn btn-eh-danger">Delete</button>
           </form>
         </div>
-        <% } else if (!listing.isDemo) { %>
-          <a href="/listings/<%= listing._id %>/book" class="btn btn-dark mx-2 edit-btn">Book</a>
-          <% } %>
+      <% } else if (!listing.isDemo) { %>
+        <div class="d-grid mt-3">
+          <a href="/listings/<%= listing._id %>/book" class="btn btn-eh btn-lg">Book</a>
+        </div>
+        <p class="text-muted small mt-2 mb-0">You can review your dates and price before paying.</p>
+      <% } else { %>
+        <p class="text-muted small mt-2 mb-0">Sample listings cannot be booked.</p>
+      <% } %>
     </div>
+  </aside>
+</div>
 
-    <div class="col-lg-6 col-md-10 col-sm-12 mx-auto mb-3">
-      <% if(currUser) {%>
-        <h3 class="text-center">Leave a review</h3>
-
+<section class="mt-5" aria-labelledby="reviews-heading">
+  <h2 id="reviews-heading" class="h4">Reviews</h2>
+  <div class="row g-4">
+    <% if (currUser) { %>
+      <div class="col-lg-5">
+        <h3 class="h6">Leave a review</h3>
         <form action="/listings/<%= listing._id %>/reviews" method="POST" novalidate class="needs-validation">
           <div class="mb-3 mt-3">
-            <label for="rating" class="form-label">Rating</label>
-            <fieldset class="starability-slot">
+            <span class="form-label d-block" id="rating-label">Rating</span>
+            <fieldset class="starability-slot" aria-labelledby="rating-label">
               <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked
                 aria-label="No rating." />
               <input type="radio" id="first-rate1" name="review[rating]" value="1" />
@@ -82,38 +115,43 @@
               <label for="first-rate5" title="Amazing">5 stars</label>
             </fieldset>
           </div>
-          <div class="mb-3 mt-3">
+          <div class="mb-3">
             <label for="comment" class="form-label">Comments</label>
-            <textarea name="review[comment]" id="comment" cols="30" rows="5" class="form-control" required></textarea>
+            <textarea name="review[comment]" id="comment" cols="30" rows="4" class="form-control" required></textarea>
             <div class="invalid-feedback">Comment box cannot be empty</div>
           </div>
-          <button class="btn btn-outline-dark mb-3 edit-btn w-100">Submit</button>
+          <button type="submit" class="btn btn-eh">Submit review</button>
         </form>
-        <% } %>
-          <% if(listing.reviews.length> 0) { %>
-            <div class="row">
-              <p class="text-center"><b>All Reviews</b></p>
-              <% for(review of listing.reviews) { %>
-                <div class="card col-lg-5 col-md-6 col-sm-12 mx-auto mb-3 p-3 shadow">
-                  <div class="card-body">
-                    <h5 class="card-title">@<%= review.author ? review.author.username : "deleted user" %>
-                    </h5>
-                    <p class="starability-result card-text" data-rating="<%= review.rating %>"></p>
-                    <p class="card-text">
-                      <%= review.comment %>
-                    </p>
-                    <% if(currUser && review.author && review.author._id.equals(currUser._id)) { %>
-                      <form class="mb-3" method="POST"
-                        action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
-                        <button class="btn btn-sm btn-dark">Delete</button>
-                      </form>
-                      <% } %>
-                  </div>
-                </div>
+      </div>
+    <% } %>
+    <div class="<%= currUser ? "col-lg-7" : "col-12" %>">
+      <% if (listing.reviews.length > 0) { %>
+        <div class="row g-3">
+          <% for (const review of listing.reviews) { %>
+            <div class="col-12 col-md-6 col-lg-12 col-xl-6">
+              <div class="review-card">
+                <h3 class="h6 mb-1">@<%= review.author ? review.author.username : "deleted user" %></h3>
+                <p class="starability-result mb-2" data-rating="<%= review.rating %>"><span class="visually-hidden">Rated <%= review.rating %> out of 5</span></p>
+                <p class="mb-2"><%= review.comment %></p>
+                <% if (currUser && review.author && review.author._id.equals(currUser._id)) { %>
+                  <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                    <button type="submit" class="btn btn-sm btn-eh-danger">Delete</button>
+                  </form>
                 <% } %>
+              </div>
             </div>
-            <% } %>
+          <% } %>
+        </div>
+      <% } else { %>
+        <p class="text-muted mb-0">No reviews yet.</p>
+      <% } %>
     </div>
   </div>
-<div id="map" class="col-lg-6 col-md-10 col-sm-12 mx-auto mb-3"></div>
-  <script src="/js/map.js"></script>
+</section>
+
+<section class="mt-5" aria-labelledby="map-heading">
+  <h2 id="map-heading" class="h4">Location</h2>
+  <div id="map" role="region" aria-label="Map showing the approximate location of this property"></div>
+  <p class="small text-muted mt-2">Approximate location only.</p>
+</section>
+<script src="/js/map.js"></script>

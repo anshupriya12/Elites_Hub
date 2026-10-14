@@ -64,12 +64,13 @@ test("demo data: 50 clearly labelled, unowned, valid sample listings (10 cities 
     const [lng, lat] = d.geometry.coordinates;
     assert.ok(lng > 68 && lng < 98 && lat > 6 && lat < 37, `${d.location} coordinates inside India`);
     assert.equal(d.geometry.type, "Point");
-    assert.match(d.image.url, /^\/images\/demo\/[a-z0-9-]+\.svg$/);
+    // New seeds reference the photographs (never the old illustrations) and the files are real, local JPEGs.
+    assert.match(d.image.url, /^\/images\/properties\/[a-z0-9-]+\.jpg$/);
     const file = path.join(ROOT, "public", d.image.url);
     assert.ok(fs.existsSync(file), `image exists: ${d.image.url}`);
-    const svg = fs.readFileSync(file, "utf8");
-    assert.ok(svg.startsWith("<svg") && svg.includes("SAMPLE ILLUSTRATION"), "generated, labelled illustration");
-    assert.ok(!/https?:\/\/(?!www\.w3\.org)/.test(svg), "no external resources in the image");
+    const bytes = fs.readFileSync(file);
+    assert.deepEqual([...bytes.subarray(0, 3)], [0xff, 0xd8, 0xff], `${d.image.url} is a JPEG`);
+    assert.ok(bytes.length > 20 * 1024 && bytes.length < 250 * 1024, `${d.image.url} size ${bytes.length}`);
   }
 });
 
@@ -81,11 +82,12 @@ test("demo data passes the real Listing schema validation", () => {
   }
 });
 
-test("illustrations exist for every demo listing; the only extra files are the legacy ones kept for old records", () => {
-  const dir = path.join(ROOT, "public", "images", "demo");
+test("one photograph per demo listing and no orphans; the old illustrations folder holds only the legacy files", () => {
   const { legacyDemoListings } = require("../init/legacyDemo.js");
-  const expected = [...demoListings, ...legacyDemoListings].map((d) => `${d.slug}.svg`).sort();
-  assert.deepEqual(fs.readdirSync(dir).sort(), expected);
+  const photosDir = path.join(ROOT, "public", "images", "properties");
+  assert.deepEqual(fs.readdirSync(photosDir).sort(), demoListings.map((d) => `${d.slug}.jpg`).sort());
+  const legacyDir = path.join(ROOT, "public", "images", "demo");
+  assert.deepEqual(fs.readdirSync(legacyDir).sort(), legacyDemoListings.map((d) => `${d.slug}.svg`).sort());
 });
 
 // ---------------- opt-in and database-target protection ----------------

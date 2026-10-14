@@ -1,67 +1,80 @@
-<style>
-  .search-btn {
-    background-color: #1d3557;
-    color: white;
-    border-radius: 25px;
-    padding: 0 1rem 0 1rem;
-  }
-  .search-btn:hover {
-    background-color: #1d3557;
-    color: white;
-  }
-  .search-btn i {
-    display: inline;
-    margin-right: 0.5rem;
-  }
-  .search-input {
-    border-radius: 25px;
-    padding: 0.5rem 3rem 0.5rem 3rem;
-    font-size: 1rem;
-  }
-</style>
+<%
+  // Which section of the site we are in, so the navbar can show "you are here". currentPath is set by the app.
+  const path = typeof currentPath !== "undefined" ? currentPath : "";
+  const onHome = path === "/";
+  const onList = path === "/listings";
+  const inProperties = path === "/listings" || (path.startsWith("/listings/") && path !== "/listings/new");
+  const onNew = path === "/listings/new";
+  const onLogin = path === "/login";
+  const onSignup = path === "/signup";
+  const currentAttr = (yes) => (yes ? ' aria-current="page"' : "");
+%>
+<header class="site-header">
+  <nav class="navbar navbar-expand-lg navbar-eh" aria-label="Main navigation">
+    <div class="container">
+      <a class="navbar-brand" href="/" aria-label="Elites Hub home">
+        <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-house-chimney"></i></span>
+        <span>Elites Hub</span>
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#mainNav"
+        aria-controls="mainNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation menu"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav me-lg-3 mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link<%= onHome ? " active" : "" %>" href="/"<%- currentAttr(onHome) %>>Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link<%= inProperties ? " active" : "" %>" href="/listings"<%- currentAttr(onList) %>>Properties</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link<%= onNew ? " active" : "" %>" href="/listings/new"<%- currentAttr(onNew) %>>List Your Property</a>
+          </li>
+        </ul>
 
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top shadow">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/"
-      ><i class="fa-regular fa-compass" style="color: #1d3557;"></i
-    ></a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNavAltMarkup"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse bg-light p-3 rounded-bottom" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link" href="/listings">ELITE ESTATES HUB</a>
-      </div>
-      <div class="navbar-nav ms-auto">
-        <form class="d-flex" role="search" action="/listings" method="get">
+        <form class="d-flex navbar-search ms-lg-auto" role="search" action="/listings" method="get">
+          <label class="visually-hidden" for="nav-q">Search properties by city or location</label>
           <input
-            class="form-control me-2 search-input "
+            id="nav-q"
+            class="form-control me-2 search-input"
             type="search"
             name="q"
             maxlength="100"
-            aria-label="Search destinations"
+            placeholder="Search by city"
             value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
-            placeholder="Search destinations"
           />
-          <button class="btn search-btn" type="submit">
-            <i class="fa-solid fa-magnifying-glass"></i>Search
+          <button class="btn btn-eh" type="submit" aria-label="Search">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <span class="ms-1 d-lg-none d-xl-inline">Search</span>
           </button>
         </form>
-      </div>
-      <div class="navbar-nav ms-auto">
-        <a class="nav-link" href="/listings/new">Sell your home</a>
-        <% if(!currUser) { %>
-        <a class="nav-link" href="/signup"><b>Sign up</b></a>
-        <a class="nav-link" href="/login"><b>Log in</b></a>
-        <%}%> <% if(currUser) { %>
-        <a class="nav-link" href="/logout"><b>Log out</b></a>
-        <%}%>
+
+        <ul class="navbar-nav ms-lg-3">
+          <% if (!currUser) { %>
+            <li class="nav-item">
+              <a class="nav-link<%= onLogin ? " active" : "" %>" href="/login"<%- currentAttr(onLogin) %>>Log in</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link<%= onSignup ? " active" : "" %>" href="/signup"<%- currentAttr(onSignup) %>>Sign up</a>
+            </li>
+          <% } else { %>
+            <li class="nav-item">
+              <span class="navbar-user d-block"><span class="d-lg-none d-xxl-inline">Signed in as </span><strong><%= currUser.username %></strong></span>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">Log out</a>
+            </li>
+          <% } %>
+        </ul>
       </div>
     </div>
-  </div>
-</nav>
+  </nav>
+</header>

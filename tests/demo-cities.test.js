@@ -107,7 +107,7 @@ const send = async (method, url, { user, form } = {}) => {
 const get = (url, user) => send("GET", url, { user });
 const cards = (html) => (html.match(/class="listing-link"/g) || []).length;
 const decode = (s) => s.replace(/&#39;/g, "'").replace(/&#34;|&quot;/g, '"').replace(/&amp;/g, "&");
-const cardTitles = (html) => [...html.matchAll(/<b>([^<]*)<\/b><br \/>/g)].map((m) => decode(m[1]));
+const cardTitles = (html) => [...html.matchAll(/<h3 class="property-card__title">([^<]*)<\/h3>/g)].map((m) => decode(m[1]));
 const demoByCity = (city) => buildDemoDocs().filter((d) => cityOf(d) === city);
 
 // ---------------- dataset ----------------
@@ -264,7 +264,7 @@ test("no match: useful empty state with a Clear Filters button that restores eve
   assert.equal(empty.status, 200);
   assert.equal(cards(empty.text), 0);
   assert.match(empty.text, /No properties match your search/);
-  const href = empty.text.match(/<a href="([^"]*)" class="btn add-btn">Clear Filters &amp; Explore All Properties<\/a>/)[1];
+  const href = empty.text.match(/<a href="([^"]*)" class="btn btn-eh">Clear Filters &amp; Explore All Properties<\/a>/)[1];
   assert.equal(href, "/listings");
   assert.equal(cards((await get(href)).text), 51);
   assert.match(empty.text, /<a href="\/listings" class="small clear-filters">Clear Filters<\/a>/);
@@ -288,7 +288,7 @@ test("removing one chip keeps the other filter; Clear Filters removes all", asyn
 
 test("the Popular cities links search each city", async () => {
   const page = (await get("/listings")).text;
-  const links = [...page.matchAll(/<a class="badge rounded-pill text-bg-light border text-decoration-none" href="([^"]*)">([^<]*)<\/a>/g)].map((m) => [m[1], m[2]]);
+  const links = [...page.matchAll(/<a class="chip" href="([^"]*)">([^<]*)<\/a>/g)].map((m) => [m[1], m[2]]);
   assert.deepEqual(links.map((l) => l[1]), EXPECTED_CITIES);
   for (const [href, name] of links) {
     assert.equal(href, `/listings?q=${name}`);
@@ -311,7 +311,7 @@ test("cards show image, title, city and price with a details link and the sample
   const d = demoByCity("Jaipur")[0];
   assert.ok(r.text.includes(d.title) && r.text.includes(d.location));
   assert.ok(r.text.includes(`src="${d.image.url}"`));
-  assert.ok(r.text.includes(`&#8377;${d.price.toLocaleString("en-IN")}/night`));
+  assert.ok(r.text.includes(`&#8377;${d.price.toLocaleString("en-IN")}</strong>`));
   assert.equal((r.text.match(/href="\/listings\/[0-9a-f]{24}" class="listing-link"/g) || []).length, 5);
   assert.equal((r.text.match(/sample-badge">Sample listing</g) || []).length, 5);
 });
@@ -363,7 +363,7 @@ test("a user's own listing keeps working: owner can edit, others can book it, se
   assert.equal((await get(`/listings/${userListing._id}/edit`, "owner")).status, 200);
   const page = await get(`/listings/${userListing._id}`, "other");
   assert.ok(page.text.includes(`/listings/${userListing._id}/book`));
-  assert.ok(!page.text.includes("Sample listing"));
+  assert.ok(!page.text.includes('class="sample-badge"') && !page.text.includes("sample-notice"));
   const crafted = await send("POST", `/listings/${userListing._id}/bookings`, { user: "other", form: { "booking[checkIn]": "2099-01-01", "booking[checkOut]": "2099-01-03", "booking[guests]": "2" } });
   assert.equal(crafted.status, 200);
   assert.equal(crafted.json.amount, 3200 * 2 * 100);

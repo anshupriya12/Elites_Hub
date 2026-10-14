@@ -35,6 +35,7 @@ module.exports.renderBookingForm = async (req, res) => {
     return res.redirect(`/listings/${id}`);
   }
   res.render("bookings/new.ejs", {
+    pageTitle: `Book ${listing.title}`,
     listing,
     paymentsConfigured: !paymentConfig().error,
   });
@@ -202,5 +203,5 @@ module.exports.showBooking = async (req, res) => {
     req.flash("error", "Booking not found.");
     return res.redirect("/listings");
   }
-  res.render("bookings/show.ejs", { booking });
+  res.render("bookings/show.ejs", { booking, pageTitle: "Booking details" });
 };

@@ -2,6 +2,7 @@ const Listing = require("../models/listing.js");
 const ExpressError = require("../utils/ExpressError.js");
 const { cities, resolveCity, cityOfLocation } = require("../utils/cityAliases.js");
 const { deleteUploadedImage } = require("../cloudConfig.js");
+const { resolvePropertyImage } = require("../utils/propertyImages.js");
 const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
 const mapToken = process.env.MAP_TOKEN;
 const isValidId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
@@ -91,14 +92,24 @@ module.exports.index = async (req, res) => {
   if (minPrice !== null) activeFilters.push({ label: `Min price: ${inr(minPrice)}`, removeUrl: without("minPrice") });
   if (maxPrice !== null) activeFilters.push({ label: `Max price: ${inr(maxPrice)}`, removeUrl: without("maxPrice") });
 
+  // Popular-city links keep any price filter that is already applied.
+  const popularCities = cities.map((c) => {
+    const link = new URLSearchParams({ q: c.name });
+    if (minPrice !== null) link.set("minPrice", String(minPrice));
+    if (maxPrice !== null) link.set("maxPrice", String(maxPrice));
+    return { name: c.name, url: `/listings?${link}` };
+  });
+
   res.locals.searchQuery = q; // pre-fills the navbar search box
   res.render("listings/index.ejs", {
+    pageTitle: q ? `Properties in ${city ? city.name : q}` : "Properties",
     allListings,
     filters: { q, minPrice: minPrice === null ? "" : minPrice, maxPrice: maxPrice === null ? "" : maxPrice },
     activeFilters,
     notices,
     searchCity: city && city.name.toLowerCase() !== q.toLowerCase() ? city.name : null,
-    popularCities: cities.map((c) => c.name),
+    popularCities,
+    photo: resolvePropertyImage,
   });
 };
 
@@ -119,12 +130,13 @@ module.exports.home = async (req, res) => {
     if (featured.length === 6) break;
     if (!featured.includes(listing)) featured.push(listing);
   }
-  res.render("home.ejs", { featured });
+  const popularCities = cities.map((c) => ({ name: c.name, url: `/listings?q=${encodeURIComponent(c.name)}` }));
+  res.render("home.ejs", { featured, popularCities, photo: resolvePropertyImage });
 };
 
 
 module.exports.renderNewForm = (req, res) => {
-  res.render("listings/new.ejs");
+  res.render("listings/new.ejs", { pageTitle: "List your property" });
 };
 
 module.exports.showListing = async (req, res) => {
@@ -147,7 +159,7 @@ module.exports.showListing = async (req, res) => {
     req.flash("error", "Listing does not exist!");
     return res.redirect("/listings");
   }
-  res.render("listings/show.ejs", { listing });
+  res.render("listings/show.ejs", { listing, pageTitle: listing.title, photo: resolvePropertyImage, withMap: true });
 };
 
 module.exports.createListing = async (req, res, next) => {
@@ -186,7 +198,7 @@ module.exports.renderEditForm = async (req, res) => {
     listing.image && listing.image.url
       ? listing.image.url.replace("/upload", "/upload/w_250")
       : "";
-  res.render("listings/edit.ejs", { listing, originalImageUrl });
+  res.render("listings/edit.ejs", { listing, originalImageUrl, pageTitle: `Edit ${listing.title}` });
 };
 
 module.exports.updateListing = async (req, res) => {

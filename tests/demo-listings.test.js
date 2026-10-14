@@ -85,7 +85,7 @@ test("demo detail page shows image, title, location, country, price, description
   for (const expected of ["Candolim Beach Villa (Sample)", "Candolim, Goa", "India", "8,500", "SAMPLE LISTING for demonstration only", "/images/demo/candolim-beach-villa.svg", "Elites Hub (sample listing)"]) {
     assert.ok(r.text.includes(expected), expected);
   }
-  assert.match(r.text, /class="alert alert-warning[^"]*sample-notice"/);
+  assert.match(r.text, /class="sample-notice"/);
   assert.match(r.text, /not real property|It is not a real property/);
   assert.match(r.text, /Back to Listings/);
 });
@@ -105,7 +105,7 @@ test("real listings are unchanged: owner shown, Book offered to others, edit/del
   const other = await client("other")("GET", `/listings/${l._id}`);
   assert.match(other.text, /<b>\s*host\s*<\/b>/);
   assert.ok(other.text.includes(`href="/listings/${l._id}/book"`));
-  assert.ok(!other.text.includes("sample-notice") && !other.text.includes("Sample listing"));
+  assert.ok(!other.text.includes("sample-notice") && !other.text.includes('class="sample-badge"'));
   assert.ok(!other.text.includes(">Delete<"));
   const owner = await client("owner")("GET", `/listings/${l._id}`);
   assert.ok(owner.text.includes(">Edit<") && owner.text.includes(">Delete<"));
