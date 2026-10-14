@@ -1,5 +1,6 @@
 const Listing = require("../models/listing.js");
 const ExpressError = require("../utils/ExpressError.js");
+const { cities, resolveCity, cityOfLocation } = require("../utils/cityAliases.js");
 const { deleteUploadedImage } = require("../cloudConfig.js");
 const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
 const mapToken = process.env.MAP_TOKEN;
@@ -55,8 +56,13 @@ module.exports.index = async (req, res) => {
   if (Number.isNaN(maxPrice)) { notices.push("The maximum price was not a valid number and was ignored."); maxPrice = null; }
 
   const query = {};
+  // A known city spelling (for example "Bangalore", "Banglaore" or "Bombay") is expanded to all listed spellings of
+  // that city and matched as whole words. Anything else is searched as plain text. No fuzzy matching.
+  const city = q ? resolveCity(q) : null;
   if (q) {
-    const rx = new RegExp(escapeRegex(q), "i");
+    const rx = city
+      ? new RegExp(`\\b(?:${city.aliases.map(escapeRegex).join("|")})\\b`, "i")
+      : new RegExp(escapeRegex(q), "i");
     query.$or = [{ location: rx }, { country: rx }, { title: rx }];
   }
   const invalidRange = minPrice !== null && maxPrice !== null && minPrice > maxPrice;
@@ -91,12 +97,28 @@ module.exports.index = async (req, res) => {
     filters: { q, minPrice: minPrice === null ? "" : minPrice, maxPrice: maxPrice === null ? "" : maxPrice },
     activeFilters,
     notices,
+    searchCity: city && city.name.toLowerCase() !== q.toLowerCase() ? city.name : null,
+    popularCities: cities.map((c) => c.name),
   });
 };
 
-// Homepage: a few of the newest properties as featured cards.
+// Homepage: six featured properties taken from the newest ones, spread across different cities where possible.
 module.exports.home = async (req, res) => {
-  const featured = await Listing.find({}).sort({ _id: -1 }).limit(6);
+  const recent = await Listing.find({}).sort({ _id: -1 }).limit(36);
+  const featured = [];
+  const seenCities = new Set();
+  for (const listing of recent) {
+    const key = cityOfLocation(listing.location) || String(listing.location || listing._id).toLowerCase();
+    if (!seenCities.has(key)) {
+      seenCities.add(key);
+      featured.push(listing);
+    }
+    if (featured.length === 6) break;
+  }
+  for (const listing of recent) {
+    if (featured.length === 6) break;
+    if (!featured.includes(listing)) featured.push(listing);
+  }
   res.render("home.ejs", { featured });
 };
 

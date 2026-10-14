@@ -47,6 +47,23 @@ Google login is enabled only when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` 
   automatically by email; log in with your password first, then choose "Login with Google" to link it.
 - Run the automated tests with `npm test`.
 
+## Sample properties (optional)
+
+`init/seedDemo.js` adds 50 clearly labelled, fictional sample properties (5 each in Delhi, Mumbai, Kolkata, Bengaluru,
+Chennai, Hyderabad, Ahmedabad, Surat, Pune and Jaipur). They are not real, not verified and cannot be booked, edited or
+deleted. The script only runs with an explicit opt-in, refuses unless the database in `ATLASDB_URL` is exactly
+`elites_hub`, never touches users or existing listings, and is safe to repeat (it upserts by a stable `demoKey`).
+
+```powershell
+# preview only - connects to nothing and writes nothing
+$env:ALLOW_DEMO_SEED = "true"; npm run seed:demo -- --dry-run
+# real run
+$env:ALLOW_DEMO_SEED = "true"; npm run seed:demo
+```
+
+Search understands common city spellings (for example Bangalore/Bengaluru, Bombay/Mumbai) through an explicit alias
+list in `utils/cityAliases.js`; there is no fuzzy matching.
+
 ## Contributing
 
 Contributions are welcome! If you'd like to contribute to the Elites Hub project, please follow these steps:

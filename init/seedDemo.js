@@ -1,4 +1,4 @@
-// Adds clearly labelled SAMPLE properties (see demoListings.js). Safe by design:
+// Adds 50 clearly labelled SAMPLE properties - 5 in each of 10 Indian cities (see demoListings.js). Safe by design:
 //   - runs only with an explicit opt-in (ALLOW_DEMO_SEED=true);
 //   - refuses unless the database named in ATLASDB_URL is exactly "elites_hub" (checked before connecting, and
 //     again on the live connection before anything is written);
@@ -11,9 +11,23 @@
 // Preview without connecting to anything:
 //   $env:ALLOW_DEMO_SEED = "true"; npm run seed:demo -- --dry-run
 const path = require("path");
-const { buildDemoDocs } = require("./demoListings.js");
+const { buildDemoDocs, demoListings, cities } = require("./demoListings.js");
+const { legacyDemoKeys } = require("./legacyDemo.js");
 
 const REQUIRED_DB = "elites_hub";
+const PER_CITY = 5;
+
+// The dataset must be exactly 10 cities x 5 unique, owner-less, demo-marked properties.
+const assertDemoData = (docs) => {
+  const keys = new Set(docs.map((d) => d.demoKey));
+  const okShape =
+    cities.length === 10 &&
+    docs.length === cities.length * PER_CITY &&
+    keys.size === docs.length &&
+    cities.every((c) => demoListings.filter((d) => d.citySlug === c.slug).length === PER_CITY) &&
+    docs.every((d) => d.isDemo === true && !("owner" in d) && /^demo-[a-z0-9-]+$/.test(d.demoKey));
+  if (!okShape) throw new Error("The demo dataset is invalid (expected 10 cities x 5 unique demo properties); nothing was written.");
+};
 
 class SeedRefusal extends Error {}
 
@@ -41,9 +55,13 @@ async function run({ env = process.env, argv = process.argv.slice(2), mongoose, 
   }
 
   const docs = buildDemoDocs();
+  assertDemoData(docs);
   if (argv.includes("--dry-run")) {
-    log(`Dry run: would add up to ${docs.length} sample listings to "${REQUIRED_DB}" (existing ones are left untouched):`);
-    docs.forEach((d) => log(`  - ${d.demoKey}  |  ${d.title}  |  ${d.location}`));
+    log(`Dry run: would add up to ${docs.length} sample listings (${cities.length} cities x ${PER_CITY}) to "${REQUIRED_DB}"; existing ones are left untouched. Nothing is written.`);
+    for (const c of cities) {
+      log(`  ${c.name}:`);
+      demoListings.filter((d) => d.citySlug === c.slug).forEach((d) => log(`    - demo-${d.slug}  |  ${d.title}  |  ${d.location}  |  INR ${d.price}`));
+    }
     return { dryRun: true, planned: docs.length, inserted: 0, existing: 0 };
   }
 
@@ -64,7 +82,17 @@ async function run({ env = process.env, argv = process.argv.slice(2), mongoose, 
     const result = await Listing.bulkWrite(ops, { ordered: false });
     const inserted = result.upsertedCount || 0;
     log(`Sample listings: ${inserted} added, ${docs.length - inserted} already present (left unchanged).`);
-    return { dryRun: false, planned: docs.length, inserted, existing: docs.length - inserted };
+
+    // Read-only report: sample listings from the first demo version (some outside the ten cities). Never changed here.
+    const legacy = await Listing.find({ demoKey: { $in: legacyDemoKeys } }, { demoKey: 1, location: 1 }).lean();
+    if (legacy.length) {
+      log(
+        `Note: ${legacy.length} sample listing(s) from the previous demo version are still in the database and were NOT changed or deleted: ` +
+          legacy.map((l) => l.location || l.demoKey).join("; ") +
+          ". Review them before removing anything."
+      );
+    }
+    return { dryRun: false, planned: docs.length, inserted, existing: docs.length - inserted, legacyFound: legacy.length };
   } finally {
     await mongoose.disconnect();
   }

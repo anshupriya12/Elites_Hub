@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Illustration of Aundh Hillside Villa (Sample)">
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d0f4de"/><stop offset="1" stop-color="#fcf6bd"/></linearGradient></defs>
+  <rect width="800" height="600" fill="url(#sky)"/>
+  <circle cx="110" cy="110" r="46" fill="#fff6c9" opacity=".9"/>
+  
+    <rect y="430" width="800" height="170" fill="#a7c957"/>
+    <rect x="200" y="300" width="380" height="135" fill="#fffaf0"/>
+    <rect x="180" y="282" width="420" height="20" fill="#7b2cbf"/>
+    <rect x="260" y="330" width="90" height="105" fill="#bfe3f2" opacity=".9"/><rect x="430" y="330" width="110" height="60" fill="#bfe3f2" opacity=".9"/>
+    <rect x="370" y="360" width="46" height="75" fill="#7b2cbf"/>
+    <rect x="110" y="455" width="280" height="40" rx="8" fill="#5bc0de"/>
+    <path d="M660 470 Q668 375 662 280" stroke="#6b4f2a" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M662 280 q-70 -40 -112 33.33333333333333" stroke="#2d6a4f" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M662 280 q-35 -40 -56 21.666666666666664" stroke="#2d6a4f" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M662 280 q0 -40 0 10" stroke="#2d6a4f" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M662 280 q35 -40 56 21.666666666666664" stroke="#2d6a4f" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M662 280 q70 -40 112 33.33333333333333" stroke="#2d6a4f" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M110 440 Q118 370 112 300" stroke="#6b4f2a" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M112 300 q-70 -40 -112 33.33333333333333" stroke="#2d6a4f" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M112 300 q-35 -40 -56 21.666666666666664" stroke="#2d6a4f" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M112 300 q0 -40 0 10" stroke="#2d6a4f" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M112 300 q35 -40 56 21.666666666666664" stroke="#2d6a4f" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M112 300 q70 -40 112 33.33333333333333" stroke="#2d6a4f" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <rect y="544" width="800" height="56" fill="#000" opacity=".5"/>
+  <text x="24" y="580" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#fff" letter-spacing="1">SAMPLE ILLUSTRATION  -  Aundh, Pune</text>
+</svg>

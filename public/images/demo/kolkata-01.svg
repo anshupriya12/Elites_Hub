@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Illustration of Park Street Colonial Residence (Sample)">
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d9b1"/><stop offset="1" stop-color="#d6c4e8"/></linearGradient></defs>
+  <rect width="800" height="600" fill="url(#sky)"/>
+  <circle cx="110" cy="110" r="46" fill="#fff6c9" opacity=".9"/>
+  
+    <rect y="470" width="800" height="130" fill="#bfa58a"/>
+    <rect x="130" y="290" width="540" height="185" fill="#f3ead2"/>
+    <polygon points="110,292 400,200 690,292" fill="#e76f51"/><polygon points="330,290 400,235 470,290" fill="#f3ead2"/>
+    <rect x="170" y="300" width="18" height="170" fill="#fffaf0"/><rect x="240" y="300" width="18" height="170" fill="#fffaf0"/><rect x="310" y="300" width="18" height="170" fill="#fffaf0"/><rect x="480" y="300" width="18" height="170" fill="#fffaf0"/><rect x="550" y="300" width="18" height="170" fill="#fffaf0"/><rect x="620" y="300" width="18" height="170" fill="#fffaf0"/>
+    <rect x="205" y="330" width="50" height="70" rx="2" fill="#7a9ab0"/><rect x="325" y="330" width="50" height="70" rx="2" fill="#7a9ab0"/><rect x="425" y="330" width="50" height="70" rx="2" fill="#7a9ab0"/><rect x="545" y="330" width="50" height="70" rx="2" fill="#7a9ab0"/>
+    <rect x="370" y="390" width="60" height="85" fill="#4a2c1a"/><rect x="340" y="470" width="120" height="10" fill="#d8d0bd"/>
+    <rect x="75" y="430" width="10" height="50" fill="#6b4226"/><circle cx="80" cy="420" r="40" fill="#4f9d58"/><rect x="725" y="426" width="10" height="54" fill="#6b4226"/><circle cx="730" cy="416" r="44" fill="#4f9d58"/>
+  <rect y="544" width="800" height="56" fill="#000" opacity=".5"/>
+  <text x="24" y="580" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#fff" letter-spacing="1">SAMPLE ILLUSTRATION  -  Park Street, Kolkata</text>
+</svg>

@@ -53,6 +53,17 @@
   </div>
 </form>
 
+<div class="popular-cities d-flex flex-wrap align-items-center gap-2 mb-2" aria-label="Popular cities">
+  <span class="small text-muted">Popular cities:</span>
+  <% popularCities.forEach(function (c) { %>
+    <a class="badge rounded-pill text-bg-light border text-decoration-none" href="/listings?q=<%= encodeURIComponent(c) %>"><%= c %></a>
+  <% }) %>
+</div>
+
+<% if (searchCity) { %>
+  <p class="small text-muted mb-2 search-note">Showing results for <b><%= searchCity %></b></p>
+<% } %>
+
 <% notices.forEach(function (notice) { %>
   <div class="alert alert-warning py-2 notice" role="alert"><%= notice %></div>
 <% }) %>
