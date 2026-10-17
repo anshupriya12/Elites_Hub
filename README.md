@@ -10,8 +10,17 @@ Hosted on Render. If the service has been idle, the first request may take a lit
 
 > The 50 properties shown on the home and listing pages are **fictional sample listings** with illustrative stock photos. They are clearly labelled "Sample" and cannot be booked, edited or deleted.
 
+## Project Demo
+
+**Live website:** [https://elites-hub-f6nu.onrender.com/](https://elites-hub-f6nu.onrender.com/)
+
+**Showcase video:** [Watch Elites Hub Showcase](assets/Elites_Hub_Showcase.mp4) (42 seconds, MP4, about 17 MB)
+
+The video walks through the Elites Hub workflow: browsing and searching properties, signing in, the listing form and owner controls (Edit and Delete), a second account opening a listing and starting a booking, and the Razorpay Checkout in test mode. It is built from real screenshots of the deployed application. GitHub opens the MP4 from the link above; it is not embedded as an inline player.
+
 ## Table of Contents
 
+- [Project Demo](#project-demo)
 - [Key Features](#key-features)
 - [Technology Stack](#technology-stack)
 - [Project Structure](#project-structure)
