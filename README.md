@@ -14,9 +14,13 @@ Hosted on Render. If the service has been idle, the first request may take a lit
 
 **Live website:** [https://elites-hub-f6nu.onrender.com/](https://elites-hub-f6nu.onrender.com/)
 
-**Showcase video:** [Watch Elites Hub Showcase](assets/Elites_Hub_Showcase.mp4) (42 seconds, MP4, about 17 MB)
+**Showcase video** (42 seconds):
 
-The video walks through the Elites Hub workflow: browsing and searching properties, signing in, the listing form and owner controls (Edit and Delete), a second account opening a listing and starting a booking, and the Razorpay Checkout in test mode. It is built from real screenshots of the deployed application. GitHub opens the MP4 from the link above; it is not embedded as an inline player.
+https://github.com/user-attachments/assets/74fc74f1-85fa-41f7-8ac1-0015c0115eca
+
+Full-quality MP4 stored in this repository: [Watch Elites Hub Showcase](assets/Elites_Hub_Showcase.mp4) (about 17 MB).
+
+The video walks through the Elites Hub workflow: browsing and searching properties, signing in, the listing form and owner controls (Edit and Delete), a second account opening a listing and starting a booking, and the Razorpay Checkout in test mode. It is built from real screenshots of the deployed application. The player above uses a lighter 9 MB web copy of the same video, because GitHub limits attached videos to 10 MB.
 
 ## Table of Contents
 
